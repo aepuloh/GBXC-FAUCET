@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GBXC Faucet</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.9.1/dist/ethers.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
+<style>
+  .cooldown-bar { height: 12px; border-radius: 6px; background: #eee; overflow: hidden; }
+  .cooldown-progress { height: 100%; background: linear-gradient(90deg,#4ade80,#16a34a); transition: width 0.5s; }
+</style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center p-6 min-h-screen">
+  <h1 class="text-3xl font-bold mb-6">GBXC Faucet</h1>
+
+  <div class="mb-4 text-lg">
+    Faucet Balance: <span id="balance">...</span> GBXC
+  </div>
+
+  <div class="w-full max-w-md mb-4">
+    <div class="cooldown-bar">
+      <div id="cooldownProgress" class="cooldown-progress w-0"></div>
+    </div>
+    <div class="text-center mt-1" id="cooldownText">Waktu tunggu: ...</div>
+  </div>
+
+  <div class="flex gap-2 mb-4">
+    <button id="connectBtn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">Connect Wallet</button>
+    <button id="wcBtn" class="bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded">WalletConnect</button>
+  </div>
+
+  <button id="claimBtn" class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded disabled:opacity-50" disabled>
+    Claim 1000 GBXC (Fee 0.005 BNB)
+  </button>
+
+  <div id="status" class="mt-4 text-green-400"></div>
+  <div id="error" class="mt-2 text-red-500"></div>
+
+<script>
+const faucetAddress = "0xc881DC5f95e09775380Ed4B001553cd6705dC85a";
+const tokenAddress = "0xecc19181c1335C15ed33A84a4E539eEF611C8BB3";
+
+const FAUCET_ABI = [
+  "function claim() external payable",
+  "function lastClaim(address) view returns(uint256)",
+  "function cooldown() view returns(uint256)"
+];
+const TOKEN_ABI = [
+  "function balanceOf(address account) view returns(uint256)"
+];
+
+let provider, signer, faucetContract, tokenContract;
+
+const connectBtn = document.getElementById("connectBtn");
+const wcBtn = document.getElementById("wcBtn");
+const claimBtn = document.getElementById("claimBtn");
+const statusDiv = document.getElementById("status");
+const errorDiv = document.getElementById("error");
+const balanceDiv = document.getElementById("balance");
+const cooldownText = document.getElementById("cooldownText");
+const cooldownProgress = document.getElementById("cooldownProgress");
+
+// --- Connect MetaMask ---
+async function connectWallet() {
+  errorDiv.innerText = "";
+  if (window.ethereum) {
+    try {
+      provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = await provider.getSigner();
+      faucetContract = new ethers.Contract(faucetAddress, FAUCET_ABI, signer);
+      tokenContract = new ethers.Contract(tokenAddress, TOKEN_ABI, provider);
+      claimBtn.disabled = false;
+      await updateBalance();
+      await updateCooldown();
+    } catch(err) { errorDiv.innerText = "Gagal connect wallet: " + err.message; }
+  } else {
+    errorDiv.innerText = "MetaMask tidak terdeteksi!";
+  }
+}
+
+// --- Connect WalletConnect ---
+async function connectWalletConnect() {
+  errorDiv.innerText = "";
+  const WalletConnectProvider = window.WalletConnectProvider.default;
+  const wcProvider = new WalletConnectProvider({
+    rpc: { 56: "https://bsc-dataseed.binance.org/" }, // ganti chain jika perlu
+    chainId: 56
+  });
+  try {
+    await wcProvider.enable();
+    provider = new ethers.BrowserProvider(wcProvider);
+    signer = await provider.getSigner();
+    faucetContract = new ethers.Contract(faucetAddress, FAUCET_ABI, signer);
+    tokenContract = new ethers.Contract(tokenAddress, TOKEN_ABI, provider);
+    claimBtn.disabled = false;
+    await updateBalance();
+    await updateCooldown();
+  } catch(err) { errorDiv.innerText = "Gagal connect WalletConnect: " + err.message; }
+}
+
+// --- Update Balance ---
+async function updateBalance() {
+  try {
+    const bal = await tokenContract.balanceOf(faucetAddress);
+    balanceDiv.innerText = (bal / 1e6).toFixed(2);
+  } catch(e){ console.error(e); }
+}
+
+// --- Update Cooldown ---
+async function updateCooldown() {
+  if (!signer) return;
+  try {
+    const userAddress = await signer.getAddress();
+    const last = await faucetContract.lastClaim(userAddress);
+    const cooldown = await faucetContract.cooldown();
+    const nextClaim = last + cooldown;
+    const now = Math.floor(Date.now() / 1000);
+
+    if(now >= nextClaim){
+      cooldownText.innerText = "Claim siap!";
+      cooldownProgress.style.width = "100%";
+      claimBtn.disabled = false;
+    } else {
+      claimBtn.disabled = true;
+      const remaining = nextClaim - now;
+      const hours = Math.floor(remaining / 3600);
+      const minutes = Math.floor((remaining % 3600)/60);
+      const seconds = remaining % 60;
+      cooldownText.innerText = `Waktu tunggu: ${hours}h ${minutes}m ${seconds}s`;
+      cooldownProgress.style.width = `${((cooldown - remaining)/cooldown)*100}%`;
+    }
+  } catch(err){ console.error(err); }
+}
+
+// --- Claim ---
+async function claimFaucet() {
+  statusDiv.innerText = "";
+  errorDiv.innerText = "";
+  try {
+    const tx = await faucetContract.claim({ value: ethers.parseEther("0.005") });
+    await tx.wait();
+    statusDiv.innerText = "Claim berhasil! Tunggu 1 jam untuk klaim berikutnya.";
+    await updateBalance();
+    await updateCooldown();
+  } catch(err){
+    console.error(err);
+    errorDiv.innerText = err.reason || err.message || "Claim gagal!";
+  }
+}
+
+// Event listeners
+connectBtn.addEventListener("click", connectWallet);
+wcBtn.addEventListener("click", connectWalletConnect);
+claimBtn.addEventListener("click", claimFaucet);
+
+// Update otomatis
+setInterval(()=>{ updateBalance(); updateCooldown(); }, 1000);
+
+</script>
+</body>
+</html>
