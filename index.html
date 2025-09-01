@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>GBXC Faucet</title>
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.8/dist/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -13,34 +14,37 @@
 </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen text-white font-sans p-4">
-  <h1 class="text-4xl font-bold mb-6 text-green-400">GBXC Faucet</h1>
 
-  <div class="mb-4 text-lg text-center">
+<h1 class="text-4xl font-bold mb-6 text-green-400">GBXC Faucet</h1>
+
+<div id="networkWarning" class="text-red-500 mb-4 text-center hidden">⚠️ Switch ke BSC Testnet dulu!</div>
+
+<div class="mb-4 text-lg text-center">
     Faucet Balance: <span id="balance">...</span> GBXC
-  </div>
+</div>
 
-  <div class="w-full max-w-md mb-4">
+<div class="w-full max-w-md mb-4">
     <div class="cooldown-bar">
       <div id="cooldownProgress" class="cooldown-progress w-0"></div>
     </div>
     <div class="text-center mt-1" id="cooldownText">Waktu tunggu: ...</div>
-  </div>
+</div>
 
-  <div class="flex gap-3 mb-4">
+<div class="flex gap-3 mb-4">
     <button id="connectBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded shadow">Connect Wallet</button>
-    <button id="wcBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded shadow">WalletConnect</button>
-  </div>
+</div>
 
-  <button id="claimBtn" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded shadow disabled:opacity-50 mb-4" disabled>
+<button id="claimBtn" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded shadow disabled:opacity-50 mb-4" disabled>
     Claim 1000 GBXC
-  </button>
+</button>
 
-  <div id="status" class="text-green-400 mt-2 text-center"></div>
-  <div id="error" class="text-red-500 mt-2 text-center"></div>
+<div id="status" class="text-green-400 mt-2 text-center"></div>
+<div id="error" class="text-red-500 mt-2 text-center"></div>
 
 <script>
-const faucetAddress = "0xc881DC5f95e09775380Ed4B001553cd6705dC85a";
-const tokenAddress = "0xecc19181c1335C15ed33A84a4E539eEF611C8BB3";
+const faucetAddress = "0x8F4cc67C9A24748A47f88d2D915a7643aAAcC260";
+const tokenAddress = "0x6759D2e5147d4E9346D7D835c71E3aDe7bd39A56";
+const BSC_TESTNET_CHAINID = 97;
 
 const FAUCET_ABI = [
   "function claim() external payable",
@@ -51,109 +55,146 @@ const TOKEN_ABI = [
   "function balanceOf(address account) view returns(uint256)"
 ];
 
-let provider, signer, faucetContract, tokenContract;
+let provider, signer, faucetContract, tokenContract, web3Modal;
 
 const connectBtn = document.getElementById("connectBtn");
-const wcBtn = document.getElementById("wcBtn");
 const claimBtn = document.getElementById("claimBtn");
 const statusDiv = document.getElementById("status");
 const errorDiv = document.getElementById("error");
 const balanceDiv = document.getElementById("balance");
 const cooldownText = document.getElementById("cooldownText");
 const cooldownProgress = document.getElementById("cooldownProgress");
+const networkWarning = document.getElementById("networkWarning");
 
-// --- Connect MetaMask ---
-async function connectWallet() {
-  errorDiv.innerText = "";
-  if (window.ethereum) {
-    try {
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = provider.getSigner();
-      faucetContract = new ethers.Contract(faucetAddress, FAUCET_ABI, signer);
-      tokenContract = new ethers.Contract(tokenAddress, TOKEN_ABI, provider);
-      claimBtn.disabled = false;
-      await updateBalance();
-      await updateCooldown();
-    } catch(err) { errorDiv.innerText = "Gagal connect wallet: " + err.message; }
-  } else { 
-    errorDiv.innerText = "MetaMask tidak terdeteksi!";
-  }
+// --- Init Web3Modal ---
+async function initWeb3Modal() {
+    const providerOptions = {
+        walletconnect: {
+            package: window.WalletConnectProvider.default,
+            options: {
+                rpc: { 97: "https://data-seed-prebsc-1-s1.binance.org:8545/" },
+                chainId: 97
+            }
+        }
+    };
+    web3Modal = new window.Web3Modal.default({
+        cacheProvider: false,
+        providerOptions
+    });
 }
 
-// --- Connect WalletConnect ---
-async function connectWalletConnect() {
-  errorDiv.innerText = "";
-  const WalletConnectProvider = window.WalletConnectProvider.default;
-  const wcProvider = new WalletConnectProvider({
-    rpc: { 56: "https://bsc-dataseed.binance.org/" },
-    chainId: 56
-  });
-  try {
-    await wcProvider.enable();
-    provider = new ethers.providers.Web3Provider(wcProvider);
-    signer = provider.getSigner();
-    faucetContract = new ethers.Contract(faucetAddress, FAUCET_ABI, signer);
-    tokenContract = new ethers.Contract(tokenAddress, TOKEN_ABI, provider);
-    claimBtn.disabled = false;
-    await updateBalance();
-    await updateCooldown();
-  } catch(err) { errorDiv.innerText = "Gagal connect WalletConnect: " + err.message; }
+// --- Connect Wallet ---
+async function connectWallet() {
+    errorDiv.innerText = "";
+    try {
+        const instance = await web3Modal.connect();
+        provider = new ethers.providers.Web3Provider(instance);
+        signer = provider.getSigner();
+        faucetContract = new ethers.Contract(faucetAddress, FAUCET_ABI, signer);
+        tokenContract = new ethers.Contract(tokenAddress, TOKEN_ABI, provider);
+        claimBtn.disabled = false;
+        await checkNetwork();
+        await updateBalance();
+        await updateCooldown();
+        statusDiv.innerText = "Wallet Connected ✅";
+    } catch(err) {
+        console.error(err);
+        errorDiv.innerText = "Gagal connect wallet: " + err.message;
+    }
+}
+
+// --- Check BSC Testnet ---
+async function checkNetwork() {
+    if (!provider) return false;
+    const { chainId } = await provider.getNetwork();
+    if (chainId !== BSC_TESTNET_CHAINID) {
+        networkWarning.classList.remove("hidden");
+        claimBtn.disabled = true;
+        return false;
+    } else {
+        networkWarning.classList.add("hidden");
+        return true;
+    }
 }
 
 // --- Update Balance ---
 async function updateBalance() {
-  try {
-    const bal = await tokenContract.balanceOf(faucetAddress);
-    balanceDiv.innerText = (bal / 1e6).toFixed(2);
-  } catch(e){ console.error(e); }
+    try {
+        if (!tokenContract) return;
+        const bal = await tokenContract.balanceOf(faucetAddress);
+        balanceDiv.innerText = (bal / 1e6).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    } catch(e){ 
+        console.error("Error fetching balance:", e);
+        balanceDiv.innerText = "0.00";
+    }
 }
 
 // --- Update Cooldown ---
 async function updateCooldown() {
-  if (!signer) return;
-  try {
-    const userAddress = await signer.getAddress();
-    const last = await faucetContract.lastClaim(userAddress);
-    const cooldown = await faucetContract.cooldown();
-    const nextClaim = last + cooldown;
-    const now = Math.floor(Date.now() / 1000);
+    if (!signer) return;
+    const isBSC = await checkNetwork();
+    if (!isBSC) return;
+    try {
+        const userAddress = await signer.getAddress();
+        const last = await faucetContract.lastClaim(userAddress);
+        const cooldown = await faucetContract.cooldown();
+        const nextClaim = last + cooldown;
+        const now = Math.floor(Date.now() / 1000);
 
-    if(now >= nextClaim){
-      cooldownText.innerText = "Claim siap!";
-      cooldownProgress.style.width = "100%";
-      claimBtn.disabled = false;
-    } else {
-      claimBtn.disabled = true;
-      const remaining = nextClaim - now;
-      const hours = Math.floor(remaining / 3600);
-      const minutes = Math.floor((remaining % 3600)/60);
-      const seconds = remaining % 60;
-      cooldownText.innerText = `Waktu tunggu: ${hours}h ${minutes}m ${seconds}s`;
-      cooldownProgress.style.width = `${((cooldown - remaining)/cooldown)*100}%`;
-    }
-  } catch(err){ console.error(err); }
+        if(now >= nextClaim){
+            cooldownText.innerText = "Claim siap!";
+            cooldownProgress.style.width = "100%";
+            claimBtn.disabled = false;
+        } else {
+            claimBtn.disabled = true;
+            const remaining = nextClaim - now;
+            const hours = Math.floor(remaining / 3600);
+            const minutes = Math.floor((remaining % 3600)/60);
+            const seconds = remaining % 60;
+            cooldownText.innerText = `Waktu tunggu: ${hours}h ${minutes}m ${seconds}s`;
+            cooldownProgress.style.width = `${((cooldown - remaining)/cooldown)*100}%`;
+        }
+    } catch(err){ console.error(err); }
 }
 
 // --- Claim ---
 async function claimFaucet() {
-  statusDiv.innerText = "";
-  errorDiv.innerText = "";
-  try {
-    const tx = await faucetContract.claim({ value: ethers.utils.parseEther("0.005") });
-    await tx.wait();
-    statusDiv.innerText = "Claim berhasil! Tunggu 1 jam untuk klaim berikutnya.";
-    await updateBalance();
-    await updateCooldown();
-  } catch(err){
-    console.error(err);
-    errorDiv.innerText = err.reason || err.message || "Claim gagal!";
-  }
+    statusDiv.innerText = "";
+    errorDiv.innerText = "";
+    const isBSC = await checkNetwork();
+    if(!isBSC) return;
+
+    try {
+        const userAddress = await signer.getAddress();
+        const last = await faucetContract.lastClaim(userAddress);
+        const cooldown = await faucetContract.cooldown();
+        const nextClaim = last + cooldown;
+        const now = Math.floor(Date.now() / 1000);
+        if(now < nextClaim){
+            const remaining = nextClaim - now;
+            errorDiv.innerText = `Belum bisa claim! Tunggu ${Math.floor(remaining/60)} menit ${remaining%60} detik`;
+            return;
+        }
+
+        claimBtn.disabled = true;
+        const tx = await faucetContract.claim({ value: ethers.utils.parseEther("0.005") });
+        await tx.wait();
+        statusDiv.innerText = "Claim berhasil! Tunggu 1 jam untuk klaim berikutnya.";
+        await updateBalance();
+        await updateCooldown();
+
+    } catch(err){
+        console.error(err);
+        errorDiv.innerText = err.reason || err.message || "Claim gagal!";
+    }
 }
 
+// --- Event listeners ---
 connectBtn.addEventListener("click", connectWallet);
-wcBtn.addEventListener("click", connectWalletConnect);
 claimBtn.addEventListener("click", claimFaucet);
+
+// --- Init Web3Modal ---
+initWeb3Modal();
 
 // Update otomatis
 setInterval(()=>{ updateBalance(); updateCooldown(); }, 1000);
