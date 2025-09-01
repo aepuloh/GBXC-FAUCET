@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>GBXC Faucet</title>
-<!-- Tailwind terbaru via CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.9.1/dist/ethers.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
   body { background-color: #111827; }
   .cooldown-bar { height: 12px; border-radius: 6px; background: #374151; overflow: hidden; }
@@ -33,7 +32,7 @@
   </div>
 
   <button id="claimBtn" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded shadow disabled:opacity-50 mb-4" disabled>
-    Claim 1000 GBXC (Fee 0.005 BNB)
+    Claim 1000 GBXC
   </button>
 
   <div id="status" class="text-green-400 mt-2 text-center"></div>
@@ -63,22 +62,26 @@ const balanceDiv = document.getElementById("balance");
 const cooldownText = document.getElementById("cooldownText");
 const cooldownProgress = document.getElementById("cooldownProgress");
 
+// --- Connect MetaMask ---
 async function connectWallet() {
   errorDiv.innerText = "";
   if (window.ethereum) {
     try {
-      provider = new ethers.BrowserProvider(window.ethereum);
+      provider = new ethers.providers.Web3Provider(window.ethereum);
       await provider.send("eth_requestAccounts", []);
-      signer = await provider.getSigner();
+      signer = provider.getSigner();
       faucetContract = new ethers.Contract(faucetAddress, FAUCET_ABI, signer);
       tokenContract = new ethers.Contract(tokenAddress, TOKEN_ABI, provider);
       claimBtn.disabled = false;
       await updateBalance();
       await updateCooldown();
     } catch(err) { errorDiv.innerText = "Gagal connect wallet: " + err.message; }
-  } else { errorDiv.innerText = "MetaMask tidak terdeteksi!"; }
+  } else { 
+    errorDiv.innerText = "MetaMask tidak terdeteksi!";
+  }
 }
 
+// --- Connect WalletConnect ---
 async function connectWalletConnect() {
   errorDiv.innerText = "";
   const WalletConnectProvider = window.WalletConnectProvider.default;
@@ -88,8 +91,8 @@ async function connectWalletConnect() {
   });
   try {
     await wcProvider.enable();
-    provider = new ethers.BrowserProvider(wcProvider);
-    signer = await provider.getSigner();
+    provider = new ethers.providers.Web3Provider(wcProvider);
+    signer = provider.getSigner();
     faucetContract = new ethers.Contract(faucetAddress, FAUCET_ABI, signer);
     tokenContract = new ethers.Contract(tokenAddress, TOKEN_ABI, provider);
     claimBtn.disabled = false;
@@ -98,6 +101,7 @@ async function connectWalletConnect() {
   } catch(err) { errorDiv.innerText = "Gagal connect WalletConnect: " + err.message; }
 }
 
+// --- Update Balance ---
 async function updateBalance() {
   try {
     const bal = await tokenContract.balanceOf(faucetAddress);
@@ -105,6 +109,7 @@ async function updateBalance() {
   } catch(e){ console.error(e); }
 }
 
+// --- Update Cooldown ---
 async function updateCooldown() {
   if (!signer) return;
   try {
@@ -130,11 +135,12 @@ async function updateCooldown() {
   } catch(err){ console.error(err); }
 }
 
+// --- Claim ---
 async function claimFaucet() {
   statusDiv.innerText = "";
   errorDiv.innerText = "";
   try {
-    const tx = await faucetContract.claim({ value: ethers.parseEther("0.005") });
+    const tx = await faucetContract.claim({ value: ethers.utils.parseEther("0.005") });
     await tx.wait();
     statusDiv.innerText = "Claim berhasil! Tunggu 1 jam untuk klaim berikutnya.";
     await updateBalance();
@@ -149,6 +155,7 @@ connectBtn.addEventListener("click", connectWallet);
 wcBtn.addEventListener("click", connectWalletConnect);
 claimBtn.addEventListener("click", claimFaucet);
 
+// Update otomatis
 setInterval(()=>{ updateBalance(); updateCooldown(); }, 1000);
 </script>
 </body>
