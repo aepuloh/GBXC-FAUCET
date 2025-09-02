@@ -108,3 +108,61 @@ if (window.ethereum) {
     }
   });
 }
+// =======================
+// BUY TOKEN
+// =======================
+async function buyToken() {
+  if (!web3 || !currentAccount) {
+    alert("❌ Wallet belum connect.");
+    return;
+  }
+  try {
+    const amountBNB = document.querySelector("#buy input").value;
+    if (!amountBNB || amountBNB <= 0) {
+      alert("Masukkan jumlah BNB yang valid.");
+      return;
+    }
+
+    const tx = await web3.eth.sendTransaction({
+      from: currentAccount,
+      to: CONFIG.token.contractAddress, // kontrak token (pastikan ada fungsi receive BNB → mint KNC)
+      value: web3.utils.toWei(amountBNB, "ether"),
+    });
+
+    console.log("✅ Buy berhasil:", tx);
+    alert("✅ Buy sukses! Tx Hash: " + tx.transactionHash);
+  } catch (err) {
+    console.error("❌ Buy gagal:", err);
+    alert("❌ Buy gagal: " + err.message);
+  }
+}
+
+// =======================
+// SWAP TOKEN
+// =======================
+async function swapToken() {
+  if (!web3 || !currentAccount) {
+    alert("❌ Wallet belum connect.");
+    return;
+  }
+  try {
+    const amount = document.querySelector("#swap input[type='number']").value;
+    if (!amount || amount <= 0) {
+      alert("Masukkan jumlah token yang valid.");
+      return;
+    }
+
+    const contract = new web3.eth.Contract(CONFIG.token.abi, CONFIG.token.contractAddress);
+
+    // pastikan kontrak token punya fungsi swap()
+    const tx = await contract.methods.swap(
+      web3.utils.toWei(amount, "ether")
+    ).send({ from: currentAccount });
+
+    console.log("✅ Swap berhasil:", tx);
+    alert("✅ Swap sukses! Tx Hash: " + tx.transactionHash);
+  } catch (err) {
+    console.error("❌ Swap gagal:", err);
+    alert("❌ Swap gagal: " + err.message);
+  }
+}
