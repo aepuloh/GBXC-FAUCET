@@ -45,19 +45,18 @@
     </div>
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
-      <a href="#" onclick="navigate('home')" class="block py-2 hover:text-yellow-500">Home</a>
-      <a href="#" onclick="navigate('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
-      <a href="#" onclick="navigate('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
-      <a href="#" onclick="navigate('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
-      <a href="#" onclick="navigate('task')" class="block py-2 hover:text-yellow-500">Task Earn</a>
-      <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
-      <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
+      <a href="#" onclick="navigateMobile('home')" class="block py-2 hover:text-yellow-500">Home</a>
+      <a href="#" onclick="navigateMobile('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
+      <a href="#" onclick="navigateMobile('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
+      <a href="#" onclick="navigateMobile('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
+      <a href="#" onclick="navigateMobile('task')" class="block py-2 hover:text-yellow-500">Task Earn</a>
+      <a href="#" onclick="navigateMobile('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
+      <a href="#" onclick="navigateMobile('about')" class="block py-2 hover:text-yellow-500">About</a>
     </div>
   </nav>
 
   <!-- Pages -->
   <main class="flex-grow px-4 pt-24 pb-10">
-
     <!-- Home -->
     <section id="home" class="hidden text-center">
       <img src="img/logo.png" alt="KenariCoin Logo" class="w-32 h-32 rounded-full mx-auto shadow-lg">
@@ -83,7 +82,7 @@
       <div class="bg-white rounded-xl shadow p-6">
         <label class="block text-left font-semibold mb-2">Amount BNB</label>
         <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
-        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
+        <button onclick="buyToken()" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
       </div>
     </section>
 
@@ -95,7 +94,7 @@
         <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
         <label class="block text-left font-semibold mb-2">To</label>
         <input type="text" disabled value="KNC" class="w-full border rounded-lg p-2 mb-4 bg-gray-100" />
-        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Swap</button>
+        <button onclick="swapToken()" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Swap</button>
       </div>
     </section>
 
@@ -129,51 +128,33 @@
     <div class="bg-white rounded-2xl p-6 w-80 shadow-lg">
       <h2 class="text-lg font-bold mb-4 text-center">Connect Wallet</h2>
       <div class="space-y-3">
-        <button onclick="selectWallet('metamask')" class="w-full border rounded-lg py-2 hover:bg-gray-100">🦊 MetaMask</button>
-        <button onclick="selectWallet('binance')" class="w-full border rounded-lg py-2 hover:bg-gray-100">🟡 Binance Wallet</button>
-        <button onclick="selectWallet('coinbase')" class="w-full border rounded-lg py-2 hover:bg-gray-100">💙 Coinbase Wallet</button>
-        <button onclick="selectWallet('bitget')" class="w-full border rounded-lg py-2 hover:bg-gray-100">🟢 Bitget Wallet</button>
-        <button onclick="selectWallet('okx')" class="w-full border rounded-lg py-2 hover:bg-gray-100">⚫ OKX Wallet</button>
+        <button onclick="selectWallet('metamask')" class="w-full border rounded-lg py-2 hover:bg-gray-100">🦊 MetaMask / Browser Wallet</button>
+        <button onclick="selectWallet('walletconnect')" class="w-full border rounded-lg py-2 hover:bg-gray-100">🔗 WalletConnect (HP)</button>
       </div>
       <button onclick="closeModal()" class="w-full mt-3 py-2 border rounded-lg hover:bg-gray-100">Cancel</button>
     </div>
   </div>
 
   <!-- Scripts -->
-  <script>
-    const mobileMenu = document.getElementById("mobileMenu");
-    const menuBtn = document.getElementById("menuBtn");
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="config.js"></script>
+  <script src="ui.js"></script>
+  <script src="wallet.js"></script>
 
-    // Toggle menu
-    menuBtn.addEventListener("click", () => {
-      mobileMenu.classList.toggle("hidden");
+  <script>
+    // Mobile menu close on navigate
+    function navigateMobile(page) {
+      showPage(page);
+      document.getElementById("mobileMenu").classList.add("hidden");
+    }
+
+    // Toggle mobile menu
+    document.getElementById("menuBtn").addEventListener("click", () => {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
     });
 
-    // Page Switching
-    function showPage(pageId) {
-      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-      document.getElementById(pageId).classList.remove("hidden");
-    }
-
-    // Navigate + close mobile menu
-    function navigate(pageId) {
-      showPage(pageId);
-      mobileMenu.classList.add("hidden");
-    }
-
-    // Modal
-    function openModal() {
-      document.getElementById("walletModal").classList.remove("hidden");
-    }
-    function closeModal() {
-      document.getElementById("walletModal").classList.add("hidden");
-    }
-    function selectWallet(wallet) {
-      alert("Wallet selected: " + wallet);
-      closeModal();
-    }
-
-    // Default Page
+    // Default page
     showPage("home");
   </script>
 </body>
