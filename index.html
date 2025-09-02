@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KenariCoin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="img/logo.png">
 </head>
 <body class="bg-gradient-to-br from-yellow-100 to-yellow-50 min-h-screen flex flex-col">
 
@@ -14,19 +17,16 @@
       <div class="flex justify-between h-16 items-center">
         <!-- Logo -->
         <div class="flex items-center space-x-2">
-          <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center font-bold text-white">K</div>
+          <img src="img/logo.png" alt="KenariCoin Logo" class="w-10 h-10 rounded-full">
           <span class="font-bold text-lg">KenariCoin</span>
         </div>
         <!-- Desktop Menu -->
         <div class="hidden md:flex space-x-6">
           <a href="#" onclick="showPage('home')" class="hover:text-yellow-500">Home</a>
-          <a href="#" onclick="showPage('buy')" class="hover:text-yellow-500">Buy</a>
-          <a href="#" onclick="showPage('swap')" class="hover:text-yellow-500">Swap</a>
-          <a href="#" onclick="showPage('task')" class="hover:text-yellow-500">Task Earn</a>
-          <a href="#" onclick="showPage('contact')" class="hover:text-yellow-500">Contact</a>
+          <a href="#" onclick="showPage('wallet')" class="hover:text-yellow-500">Wallet</a>
+          <a href="#" onclick="showPage('about')" class="hover:text-yellow-500">About</a>
         </div>
-        <!-- Wallet Button -->
-        <div>
+    </div>
           <button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
             Connect Wallet
           </button>
