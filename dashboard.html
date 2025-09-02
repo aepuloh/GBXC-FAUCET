@@ -121,79 +121,8 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-  <script>
-    // Toggle Mobile Menu
-    document.getElementById("menuBtn").addEventListener("click", () => {
-      document.getElementById("mobileMenu").classList.toggle("hidden");
-    });
-
-    // Modal functions
-    function openModal() {
-      document.getElementById("walletModal").classList.remove("hidden");
-    }
-    function closeModal() {
-      document.getElementById("walletModal").classList.add("hidden");
-    }
-
-    let web3;
-
-    async function switchNetwork() {
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x38" }], // BSC Mainnet
-        });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [{
-              chainId: "0x38",
-              chainName: "BNB Smart Chain",
-              nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
-              rpcUrls: ["https://bsc-dataseed.binance.org/"],
-              blockExplorerUrls: ["https://bscscan.com/"],
-            }],
-          });
-        }
-      }
-    }
-
-    async function selectWallet(type) {
-      if (!window.ethereum) {
-        alert("❌ Wallet extension tidak terdeteksi. Install MetaMask / Binance Wallet / lainnya.");
-        return;
-      }
-      try {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        const account = accounts[0];
-        web3 = new Web3(window.ethereum);
-        await switchNetwork();
-
-        // Update button jadi connected
-        const connectBtn = document.getElementById("connectBtn");
-        connectBtn.innerText = "✅ Wallet Connected";
-        connectBtn.classList.remove("bg-yellow-500", "hover:bg-yellow-600");
-        connectBtn.classList.add("bg-green-500", "hover:bg-green-600");
-
-        // Tutup modal
-        closeModal();
-
-        // Redirect ke Home
-        showPage("home");
-      } catch (error) {
-        console.error("❌ Wallet connection failed:", error);
-      }
-    }
-
-    // Page navigation
-    function showPage(pageId) {
-      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-      document.getElementById(pageId).classList.remove("hidden");
-    }
-
-    // Default tampil Home (kosong sampai connect)
-    showPage("home");
-  </script>
+  <script src="js/config.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/wallet.js"></script>
 </body>
 </html>
