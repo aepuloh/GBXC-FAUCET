@@ -4,102 +4,197 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KenariCoin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+<body class="bg-gradient-to-b from-yellow-100 to-yellow-200 min-h-screen flex flex-col">
 
-  <div class="bg-gradient-to-r from-blue-800 to-purple-900 p-6 rounded-2xl shadow-xl text-center w-[90%] max-w-md">
-    
-    <!-- Header -->
-    <h2 class="text-2xl font-bold text-white mb-4">KenariCoin Dashboard</h2>
-    
-    <!-- Wallet Info -->
-    <p class="text-gray-200">Address:</p>
-    <p id="userAddress" class="text-green-400 break-all text-sm">Not connected</p>
-    
-    <p class="text-gray-200 mt-2">Balance:</p>
-    <p id="userBalance" class="text-yellow-400">0 BNB</p>
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <!-- Logo -->
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center font-bold text-white">
+            K
+          </div>
+          <span class="ml-3 font-bold text-xl">KenariCoin</span>
+        </div>
 
-    <hr class="my-4 border-gray-500">
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="#" class="text-gray-700 hover:text-yellow-600 font-semibold">Buy</a>
+          <a href="#" class="text-gray-700 hover:text-yellow-600 font-semibold">Swap</a>
+          <a href="#" class="text-gray-700 hover:text-yellow-600 font-semibold">Task</a>
+          <a href="#" class="text-gray-700 hover:text-yellow-600 font-semibold">Contact</a>
+          <div id="walletStatus" class="text-sm font-semibold px-3 py-1 rounded-lg bg-red-100 text-red-700">
+            🔴 Not Connected
+          </div>
+        </div>
 
-    <!-- Contract Info -->
-    <h3 class="text-lg font-semibold text-yellow-400">Contract Address</h3>
-    <p id="contractAddress" class="text-yellow-300 break-all text-sm">
-      0x1390f63AF92448c46368443496a2bfc1469558de
-    </p>
-    <button onclick="copyContract()" class="bg-yellow-500 text-black px-3 py-1 rounded mt-2">Copy</button>
-
-    <!-- Action Buttons -->
-    <div class="grid grid-cols-2 gap-3 mt-6">
-      <a href="https://pancakeswap.finance/swap?outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de" 
-         target="_blank" 
-         class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
-         Buy PCS
-      </a>
-      
-      <a href="https://pancakeswap.finance/swap" 
-         target="_blank" 
-         class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
-         Swap
-      </a>
-      
-      <button onclick="alert('Task system coming soon!')" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded">
-        Tasks
-      </button>
-
-      <button onclick="disconnectWallet()" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
-        Disconnect
-      </button>
+        <!-- Mobile Menu Button -->
+        <div class="flex items-center md:hidden">
+          <button id="menuBtn" class="text-gray-700 focus:outline-none">
+            ☰
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Wallet Connect -->
-    <button onclick="connectWallet()" id="connectBtn" class="bg-indigo-500 hover:bg-indigo-600 w-full mt-6 text-white font-semibold py-2 px-4 rounded">
+    <!-- Mobile Dropdown -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+      <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-yellow-50">Buy</a>
+      <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-yellow-50">Swap</a>
+      <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-yellow-50">Task</a>
+      <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-yellow-50">Contact</a>
+      <div id="walletStatusMobile" class="px-4 py-2 text-sm font-semibold bg-red-100 text-red-700 rounded-lg inline-block mt-2">
+        🔴 Not Connected
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex flex-col justify-center items-center text-center px-4 mt-20">
+    <!-- Logo Circle -->
+    <div class="w-32 h-32 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
+      <span class="text-4xl font-bold text-white">K</span>
+    </div>
+
+    <!-- Description -->
+    <p class="mt-6 text-gray-700 max-w-xl">
+      <strong>KenariCoin</strong> adalah token inovatif yang dibangun di jaringan BNB Smart Chain.
+      Dirancang untuk ekosistem keuangan digital masa depan dengan fitur swap, staking, dan rewards.
+    </p>
+
+    <!-- Connect Wallet Button -->
+    <button onclick="openModal()" class="mt-8 px-6 py-3 bg-yellow-500 text-white rounded-lg text-lg font-semibold hover:bg-yellow-600 transition">
       Connect Wallet
     </button>
+    <p id="walletAddress" class="mt-3 text-gray-700 font-medium"></p>
+  </main>
+
+  <!-- Wallet Modal -->
+  <div id="walletModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-6 w-96 shadow-lg">
+      <h2 class="text-xl font-bold mb-4 text-center">Select Wallet</h2>
+      <div class="space-y-3">
+        <button onclick="selectWallet('metamask')" class="w-full py-2 bg-gray-100 hover:bg-yellow-100 rounded-lg font-semibold">
+          🦊 MetaMask <span class="text-green-500 ml-2">(Recommended)</span>
+        </button>
+        <button onclick="selectWallet('binance')" class="w-full py-2 bg-gray-100 hover:bg-yellow-100 rounded-lg font-semibold">
+          🟡 Binance Wallet
+        </button>
+        <button onclick="selectWallet('coinbase')" class="w-full py-2 bg-gray-100 hover:bg-yellow-100 rounded-lg font-semibold">
+          💙 Coinbase Wallet
+        </button>
+        <button onclick="selectWallet('bitget')" class="w-full py-2 bg-gray-100 hover:bg-yellow-100 rounded-lg font-semibold">
+          🟢 Bitget Wallet
+        </button>
+        <button onclick="selectWallet('okx')" class="w-full py-2 bg-gray-100 hover:bg-yellow-100 rounded-lg font-semibold">
+          ⚫ OKX Wallet
+        </button>
+      </div>
+      <button onclick="disconnectWallet()" class="w-full mt-4 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-semibold">
+        Disconnect Wallet
+      </button>
+      <button onclick="closeModal()" class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 rounded-lg font-semibold">
+        Cancel
+      </button>
+    </div>
   </div>
 
-  <script>
-    const contractAddress = "0x1390f63AF92448c46368443496a2bfc1469558de";
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 px-4 py-2 rounded-lg shadow-lg text-white"></div>
 
-    // Copy contract address
-    function copyContract() {
-      navigator.clipboard.writeText(contractAddress);
-      alert("Contract copied: " + contractAddress);
+  <!-- Scripts -->
+  <script>
+    // Toggle mobile menu
+    document.getElementById("menuBtn").addEventListener("click", () => {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    });
+
+    function openModal() {
+      document.getElementById("walletModal").classList.remove("hidden");
+    }
+    function closeModal() {
+      document.getElementById("walletModal").classList.add("hidden");
     }
 
-    // Connect wallet
-    async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-          const account = accounts[0];
-          document.getElementById("userAddress").innerText = account;
-          document.getElementById("connectBtn").style.display = "none";
+    function showToast(message, type = "info") {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.className = "fixed bottom-5 right-5 px-4 py-2 rounded-lg shadow-lg text-white";
+      if (type === "success") toast.classList.add("bg-green-500");
+      else if (type === "error") toast.classList.add("bg-red-500");
+      else toast.classList.add("bg-gray-700");
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 3000);
+    }
 
-          // Load Web3
-          window.web3 = new Web3(window.ethereum);
-
-          // Get balance
-          let balance = await web3.eth.getBalance(account);
-          balance = web3.utils.fromWei(balance, "ether");
-          document.getElementById("userBalance").innerText = balance + " BNB";
-        } catch (error) {
-          console.error(error);
-          alert("Failed to connect wallet!");
-        }
+    let web3;
+    function updateWalletStatus(status, account = null) {
+      const desktop = document.getElementById("walletStatus");
+      const mobile = document.getElementById("walletStatusMobile");
+      if (status === "connected" && account) {
+        const shortAcc = account.substring(0,6) + "..." + account.slice(-4);
+        desktop.innerText = "🟢 Connected: " + shortAcc;
+        mobile.innerText = "🟢 Connected: " + shortAcc;
+        desktop.className = "text-sm font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700";
+        mobile.className = "px-4 py-2 text-sm font-semibold bg-green-100 text-green-700 rounded-lg inline-block mt-2";
       } else {
-        alert("Please install MetaMask!");
+        desktop.innerText = "🔴 Not Connected";
+        mobile.innerText = "🔴 Not Connected";
+        desktop.className = "text-sm font-semibold px-3 py-1 rounded-lg bg-red-100 text-red-700";
+        mobile.className = "px-4 py-2 text-sm font-semibold bg-red-100 text-red-700 rounded-lg inline-block mt-2";
       }
     }
 
-    // Disconnect wallet
-    function disconnectWallet() {
-      document.getElementById("userAddress").innerText = "Not connected";
-      document.getElementById("userBalance").innerText = "0 BNB";
-      document.getElementById("connectBtn").style.display = "block";
+    async function switchNetwork() {
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x38" }], // BNB Smart Chain
+        });
+      } catch (err) {
+        console.error("Switch network error:", err);
+      }
     }
-  </script>
 
+    async function selectWallet(type) {
+      if (["metamask","binance","okx","bitget","coinbase"].includes(type)) {
+        if (window.ethereum) {
+          try {
+            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+            const account = accounts[0];
+            web3 = new Web3(window.ethereum);
+
+            await switchNetwork();
+
+            document.getElementById("walletAddress").innerText = "Wallet: " + account;
+            updateWalletStatus("connected", account);
+            closeModal();
+            showToast("✅ Connected: " + account.substring(0,6) + "..." + account.slice(-4), "success");
+          } catch (e) {
+            console.error(e);
+            showToast("❌ Connection failed", "error");
+            updateWalletStatus("disconnected");
+          }
+        } else {
+          showToast("❌ " + type + " not detected", "error");
+          updateWalletStatus("disconnected");
+        }
+      }
+    }
+
+    function disconnectWallet() {
+      document.getElementById("walletAddress").innerText = "";
+      updateWalletStatus("disconnected");
+      showToast("🔌 Wallet disconnected", "info");
+      closeModal();
+    }
+
+    // Default
+    updateWalletStatus("disconnected");
+  </script>
 </body>
 </html>
