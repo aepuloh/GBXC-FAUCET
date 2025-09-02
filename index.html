@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KenariCoin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="img/logo.png">
 </head>
 <body class="bg-gradient-to-br from-yellow-100 to-yellow-50 min-h-screen flex flex-col">
@@ -24,13 +22,16 @@
         <div class="hidden md:flex space-x-6">
           <a href="#" onclick="showPage('home')" class="hover:text-yellow-500">Home</a>
           <a href="#" onclick="showPage('wallet')" class="hover:text-yellow-500">Wallet</a>
+          <a href="#" onclick="showPage('buy')" class="hover:text-yellow-500">Buy</a>
+          <a href="#" onclick="showPage('swap')" class="hover:text-yellow-500">Swap</a>
+          <a href="#" onclick="showPage('task')" class="hover:text-yellow-500">Task Earn</a>
+          <a href="#" onclick="showPage('contact')" class="hover:text-yellow-500">Contact</a>
           <a href="#" onclick="showPage('about')" class="hover:text-yellow-500">About</a>
         </div>
-    </div>
-          <button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
-            Connect Wallet
-          </button>
-        </div>
+        <!-- Connect Button -->
+        <button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
+          Connect Wallet
+        </button>
         <!-- Mobile Hamburger -->
         <div class="md:hidden">
           <button id="menuBtn" class="focus:outline-none">
@@ -45,16 +46,19 @@
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
       <a href="#" onclick="showPage('home')" class="block py-2 hover:text-yellow-500">Home</a>
+      <a href="#" onclick="showPage('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
       <a href="#" onclick="showPage('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
       <a href="#" onclick="showPage('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
       <a href="#" onclick="showPage('task')" class="block py-2 hover:text-yellow-500">Task Earn</a>
       <a href="#" onclick="showPage('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
+      <a href="#" onclick="showPage('about')" class="block py-2 hover:text-yellow-500">About</a>
     </div>
   </nav>
 
   <!-- Pages -->
   <main class="flex-grow px-4 pt-24 pb-10">
-    <!-- Home Page -->
+
+    <!-- Home -->
     <section id="home" class="hidden text-center">
       <div class="w-32 h-32 bg-yellow-400 rounded-full mx-auto flex items-center justify-center text-white font-bold text-3xl shadow-lg">
         K
@@ -62,37 +66,20 @@
       <h1 class="text-3xl font-bold mt-4">Selamat Datang di KenariCoin</h1>
       <p class="text-gray-600 max-w-xl mx-auto mt-2">
         KenariCoin adalah token inovatif berbasis Binance Smart Chain yang dirancang
-        untuk ekosistem keuangan terdesentralisasi. Dengan visi membangun komunitas yang solid,
-        KenariCoin memberikan berbagai manfaat untuk holder dan ekosistem DeFi.
+        untuk ekosistem keuangan terdesentralisasi.
       </p>
+    </section>
 
-      <!-- Tentang Koin -->
-      <div class="mt-6 max-w-2xl mx-auto bg-white rounded-xl shadow p-6 text-left">
-        <h2 class="text-xl font-bold mb-2">Tentang KenariCoin</h2>
-        <p class="text-gray-700">
-          KenariCoin hadir untuk memberikan pengalaman baru dalam dunia cryptocurrency.
-          Token ini berfokus pada adopsi global, transparansi, dan memberikan reward
-          yang adil kepada komunitasnya.
-        </p>
-      </div>
-
-      <!-- Wallet Balance -->
-      <div class="mt-6 max-w-md mx-auto bg-white rounded-xl shadow p-6 text-left">
-        <h2 class="text-xl font-bold mb-4">Wallet Balance</h2>
+    <!-- Wallet -->
+    <section id="wallet" class="hidden max-w-md mx-auto text-center">
+      <h2 class="text-2xl font-bold mb-4">Wallet Balance</h2>
+      <div class="bg-white rounded-xl shadow p-6 text-left">
         <p class="text-gray-700">BNB: <span id="bnbBalance">0 BNB</span></p>
         <p class="text-gray-700">KNC: <span id="tokenBalance">0 KNC</span></p>
       </div>
-
-      <!-- Social Media -->
-      <div class="mt-8 flex justify-center space-x-4">
-        <a href="https://instagram.com" target="_blank" class="px-4 py-2 bg-pink-500 text-white rounded-full hover:bg-pink-600">Instagram</a>
-        <a href="https://t.me" target="_blank" class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">Telegram</a>
-        <a href="https://twitter.com" target="_blank" class="px-4 py-2 bg-sky-500 text-white rounded-full hover:bg-sky-600">Twitter</a>
-        <a href="https://facebook.com" target="_blank" class="px-4 py-2 bg-blue-700 text-white rounded-full hover:bg-blue-800">Facebook</a>
-      </div>
     </section>
 
-    <!-- Buy Page -->
+    <!-- Buy -->
     <section id="buy" class="hidden max-w-md mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Buy KenariCoin</h2>
       <div class="bg-white rounded-xl shadow p-6">
@@ -102,7 +89,7 @@
       </div>
     </section>
 
-    <!-- Swap Page -->
+    <!-- Swap -->
     <section id="swap" class="hidden max-w-md mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Swap</h2>
       <div class="bg-white rounded-xl shadow p-6">
@@ -114,29 +101,28 @@
       </div>
     </section>
 
-    <!-- Task Earn Page -->
+    <!-- Task Earn -->
     <section id="task" class="hidden max-w-xl mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Task Earn</h2>
       <div class="bg-white rounded-xl shadow p-6 space-y-4 text-left">
-        <div>
-          <p class="font-semibold">✅ Join Telegram</p>
-          <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Complete</button>
-        </div>
-        <div>
-          <p class="font-semibold">🐦 Follow Twitter</p>
-          <button class="mt-2 px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600">Complete</button>
-        </div>
-        <div>
-          <p class="font-semibold">📷 Follow Instagram</p>
-          <button class="mt-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600">Complete</button>
-        </div>
+        <div><p class="font-semibold">✅ Join Telegram</p></div>
+        <div><p class="font-semibold">🐦 Follow Twitter</p></div>
+        <div><p class="font-semibold">📷 Follow Instagram</p></div>
       </div>
     </section>
 
-    <!-- Contact Page -->
+    <!-- Contact -->
     <section id="contact" class="hidden text-center">
       <h2 class="text-2xl font-bold">Contact</h2>
       <p class="mt-2 text-gray-600">Email: support@kenaricoin.com</p>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="hidden text-center">
+      <h2 class="text-2xl font-bold">Tentang KenariCoin</h2>
+      <p class="mt-2 text-gray-600 max-w-xl mx-auto">
+        KenariCoin hadir untuk memberikan pengalaman baru dalam dunia crypto.
+      </p>
     </section>
   </main>
 
@@ -156,9 +142,32 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/wallet.js"></script>
+  <script>
+    // Mobile Menu
+    document.getElementById("menuBtn").addEventListener("click", () => {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    });
+
+    // Page Switching
+    function showPage(pageId) {
+      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
+      document.getElementById(pageId).classList.remove("hidden");
+    }
+
+    // Modal
+    function openModal() {
+      document.getElementById("walletModal").classList.remove("hidden");
+    }
+    function closeModal() {
+      document.getElementById("walletModal").classList.add("hidden");
+    }
+    function selectWallet(wallet) {
+      alert("Wallet selected: " + wallet);
+      closeModal();
+    }
+
+    // Default Page
+    showPage("home");
+  </script>
 </body>
 </html>
