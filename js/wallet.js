@@ -1,6 +1,9 @@
 let web3;
 let currentAccount = null;
 
+// =======================
+// NETWORK SWITCH
+// =======================
 async function switchNetwork() {
   if (!window.ethereum) return;
   try {
@@ -18,40 +21,57 @@ async function switchNetwork() {
   }
 }
 
+// =======================
+// CONNECT WALLET
+// =======================
 async function selectWallet(type) {
-  if (!window.ethereum) {
-    alert("❌ Wallet extension tidak terdeteksi.");
-    return;
-  }
   try {
-    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    currentAccount = accounts[0];
-    web3 = new Web3(window.ethereum);
-    await switchNetwork();
+    if (type === "metamask" && window.ethereum) {
+      // 🦊 MetaMask / Browser Extension
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      currentAccount = accounts[0];
+      web3 = new Web3(window.ethereum);
+    } else {
+      // 📱 Fallback: WalletConnect (mobile browser tanpa extension)
+      const provider = new WalletConnectProvider.default({
+        rpc: { 56: CONFIG.network.rpcUrls[0] }, // BSC Mainnet
+        chainId: 56,
+      });
+      await provider.enable();
+      web3 = new Web3(provider);
+      const accounts = await web3.eth.getAccounts();
+      currentAccount = accounts[0];
+    }
 
+    await switchNetwork();
     updateUIConnected();
     closeModal();
     showPage("home");
-
-    // 🚀 Ambil saldo setelah connect
     loadBalances();
+
   } catch (error) {
     console.error("❌ Wallet connection failed:", error);
+    alert("❌ Gagal connect wallet: " + error.message);
   }
 }
 
+// =======================
+// DISCONNECT
+// =======================
 function disconnectWallet() {
   currentAccount = null;
   web3 = null;
   updateUIDisconnected();
   showPage("contact");
 
-  // Reset saldo di UI
+  // Reset saldo UI
   document.getElementById("bnbBalance").innerText = "0 BNB";
   document.getElementById("tokenBalance").innerText = "0 " + CONFIG.token.symbol;
 }
 
-// UI update
+// =======================
+// UI
+// =======================
 function updateUIConnected() {
   const connectBtn = document.getElementById("connectBtn");
   connectBtn.innerText = "🔌 Disconnect Wallet";
@@ -68,7 +88,9 @@ function updateUIDisconnected() {
   connectBtn.classList.add("bg-yellow-500", "hover:bg-yellow-600");
 }
 
-// 🚀 Fungsi ambil saldo BNB & Token
+// =======================
+// LOAD BALANCE
+// =======================
 async function loadBalances() {
   if (!web3 || !currentAccount) return;
 
@@ -78,17 +100,8 @@ async function loadBalances() {
     const formattedBNB = web3.utils.fromWei(balanceBNB, "ether");
     document.getElementById("bnbBalance").innerText = `${parseFloat(formattedBNB).toFixed(4)} BNB`;
 
-    // Ambil saldo token KNC (ERC20 standard)
-    const tokenAbi = [
-      {
-        "constant": true,
-        "inputs": [{ "name": "owner", "type": "address" }],
-        "name": "balanceOf",
-        "outputs": [{ "name": "", "type": "uint256" }],
-        "type": "function"
-      }
-    ];
-    const token = new web3.eth.Contract(tokenAbi, CONFIG.token.contractAddress);
+    // Ambil saldo token KNC
+    const token = new web3.eth.Contract(CONFIG.token.abi, CONFIG.token.contractAddress);
     const balanceKNC = await token.methods.balanceOf(currentAccount).call();
     const formattedKNC = balanceKNC / 10 ** CONFIG.token.decimals;
     document.getElementById("tokenBalance").innerText = `${formattedKNC.toFixed(2)} ${CONFIG.token.symbol}`;
@@ -97,7 +110,9 @@ async function loadBalances() {
   }
 }
 
-// Auto handle disconnect / ganti akun
+// =======================
+// AUTO HANDLE EVENT
+// =======================
 if (window.ethereum) {
   window.ethereum.on("accountsChanged", (accounts) => {
     if (accounts.length === 0) {
@@ -108,8 +123,9 @@ if (window.ethereum) {
     }
   });
 }
+
 // =======================
-// BUY TOKEN
+// BUY TOKEN (via contract)
 // =======================
 async function buyToken() {
   if (!web3 || !currentAccount) {
@@ -125,7 +141,7 @@ async function buyToken() {
 
     const tx = await web3.eth.sendTransaction({
       from: currentAccount,
-      to: CONFIG.token.contractAddress, // kontrak token (pastikan ada fungsi receive BNB → mint KNC)
+      to: CONFIG.token.contractAddress,
       value: web3.utils.toWei(amountBNB, "ether"),
     });
 
@@ -138,7 +154,7 @@ async function buyToken() {
 }
 
 // =======================
-// SWAP TOKEN
+// SWAP TOKEN (via contract DEX / Router)
 // =======================
 async function swapToken() {
   if (!web3 || !currentAccount) {
@@ -154,7 +170,7 @@ async function swapToken() {
 
     const contract = new web3.eth.Contract(CONFIG.token.abi, CONFIG.token.contractAddress);
 
-    // pastikan kontrak token punya fungsi swap()
+    // ⚠️ Catatan: Pastikan kontrak kamu punya fungsi swap()
     const tx = await contract.methods.swap(
       web3.utils.toWei(amount, "ether")
     ).send({ from: currentAccount });
