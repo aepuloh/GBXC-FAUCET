@@ -1,40 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KenariCoin (KN) - Connect</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KenariCoin - Connect Wallet</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider/dist/umd/index.min.js"></script>
+  <script src="https://unpkg.com/web3modal"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="h-screen flex items-center justify-center bg-gradient-to-b from-yellow-100 to-white">
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+  <div class="text-center">
+    <img src="https://raw.githubusercontent.com/aepuloh/KenariCoin/main/logo.png" alt="KenariCoin Logo" class="w-24 mx-auto mb-4">
+    <h1 class="text-3xl font-bold mb-2">Selamat Datang di KenariCoin</h1>
+    <p class="mb-6 text-gray-300">Silakan hubungkan wallet Anda untuk melanjutkan</p>
 
-  <button id="connectBtn" class="rounded-2xl px-8 py-4 text-xl bg-yellow-400 hover:bg-yellow-500 text-white font-bold shadow-lg transition">
-    Connect Wallet
-  </button>
+    <button id="connectBtn" class="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-xl hover:bg-yellow-400">
+      🔗 Connect Wallet
+    </button>
+
+    <p id="status" class="mt-4 text-green-400 hidden">✅ Wallet berhasil terhubung...</p>
+  </div>
 
   <script>
     const connectBtn = document.getElementById("connectBtn");
-    let provider, signer, account;
+    const statusEl = document.getElementById("status");
 
-    connectBtn.addEventListener("click", async () => {
-      if (window.ethereum) {
-        try {
-          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-          account = accounts[0];
-          provider = new ethers.providers.Web3Provider(window.ethereum);
-          signer = provider.getSigner();
+    let provider;
+    let signer;
 
-          // ✅ redirect ke dashboard
-          localStorage.setItem("connectedAccount", account); // simpan biar bisa dipakai di dashboard
-          window.location.href = "dashboard.html";
-        } catch (err) {
-          alert("Wallet connect error: " + err.message);
+    async function connectWallet() {
+      try {
+        const web3Modal = new window.Web3Modal.default({
+          cacheProvider: false,
+          providerOptions: {
+            walletconnect: {
+              package: window.WalletConnectProvider.default,
+              options: {
+                rpc: {
+                  56: "https://bsc-dataseed.binance.org/"
+                },
+                chainId: 56
+              }
+            }
+          }
+        });
+
+        const instance = await web3Modal.connect();
+        provider = new ethers.providers.Web3Provider(instance);
+        signer = provider.getSigner();
+
+        const network = await provider.getNetwork();
+        if (network.chainId !== 56) {
+          alert("⚠️ Harap switch ke Binance Smart Chain Mainnet!");
+          return;
         }
-      } else {
-        alert("Please install MetaMask or WalletConnect supported wallet!");
+
+        const account = await signer.getAddress();
+        statusEl.classList.remove("hidden");
+        statusEl.innerText = `✅ Connected: ${account.slice(0,6)}...${account.slice(-4)}`;
+
+        // Redirect ke dashboard.html
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1500);
+
+      } catch (err) {
+        alert("Wallet connect error: " + err.message);
       }
-    });
+    }
+
+    connectBtn.addEventListener("click", connectWallet);
   </script>
 </body>
 </html>
