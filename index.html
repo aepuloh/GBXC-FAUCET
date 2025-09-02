@@ -178,28 +178,29 @@
   let userAddress;
 
   async function connectMetaMask() {
-    if (window.ethereum) {
-      try {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
+  if (window.ethereum) {
+    try {
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      userAddress = await signer.getAddress();
 
-        alert("MetaMask connected: " + userAddress);
-        document.getElementById("connectBtn").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+      alert("MetaMask connected: " + userAddress);
+      document.getElementById("connectBtn").innerText =
+        userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
 
-        // Tampilkan saldo
-        updateBalances();
+      // Update saldo
+      updateBalances();
 
-        closeModal();
-      } catch (error) {
-        console.error(error);
-        alert("MetaMask connection failed!");
-      }
-    } else {
-      alert("MetaMask belum terpasang. Silakan install di browser Anda!");
+      closeModal();
+    } catch (error) {
+      console.error("MetaMask error:", error);
+      alert("MetaMask connection failed!\n\n" + error.message);
     }
+  } else {
+    alert("MetaMask belum terpasang. Silakan install di browser Anda!");
   }
+}
 
   async function connectOKX() {
     if (window.okxwallet && window.okxwallet.request) {
