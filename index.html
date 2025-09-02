@@ -45,13 +45,13 @@
     </div>
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
-      <a href="#" onclick="showPage('home')" class="block py-2 hover:text-yellow-500">Home</a>
-      <a href="#" onclick="showPage('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
-      <a href="#" onclick="showPage('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
-      <a href="#" onclick="showPage('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
-      <a href="#" onclick="showPage('task')" class="block py-2 hover:text-yellow-500">Task Earn</a>
-      <a href="#" onclick="showPage('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
-      <a href="#" onclick="showPage('about')" class="block py-2 hover:text-yellow-500">About</a>
+      <a href="#" onclick="navigate('home')" class="block py-2 hover:text-yellow-500">Home</a>
+      <a href="#" onclick="navigate('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
+      <a href="#" onclick="navigate('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
+      <a href="#" onclick="navigate('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
+      <a href="#" onclick="navigate('task')" class="block py-2 hover:text-yellow-500">Task Earn</a>
+      <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
+      <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
     </div>
   </nav>
 
@@ -59,14 +59,14 @@
   <main class="flex-grow px-4 pt-24 pb-10">
 
     <!-- Home -->
-  <section id="home" class="hidden text-center">
-  <img src="img/logo.png" alt="KenariCoin Logo" class="w-32 h-32 rounded-full mx-auto shadow-lg">
-  <h1 class="text-3xl font-bold mt-4">Selamat Datang di KenariCoin</h1>
-  <p class="text-gray-600 max-w-xl mx-auto mt-2">
-    KenariCoin adalah token inovatif berbasis Binance Smart Chain yang dirancang
-    untuk ekosistem keuangan terdesentralisasi.
-  </p>
-  </section>
+    <section id="home" class="hidden text-center">
+      <img src="img/logo.png" alt="KenariCoin Logo" class="w-32 h-32 rounded-full mx-auto shadow-lg">
+      <h1 class="text-3xl font-bold mt-4">Selamat Datang di KenariCoin</h1>
+      <p class="text-gray-600 max-w-xl mx-auto mt-2">
+        KenariCoin adalah token inovatif berbasis Binance Smart Chain yang dirancang
+        untuk ekosistem keuangan terdesentralisasi.
+      </p>
+    </section>
 
     <!-- Wallet -->
     <section id="wallet" class="hidden max-w-md mx-auto text-center">
@@ -141,15 +141,24 @@
 
   <!-- Scripts -->
   <script>
-    // Mobile Menu
-    document.getElementById("menuBtn").addEventListener("click", () => {
-      document.getElementById("mobileMenu").classList.toggle("hidden");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const menuBtn = document.getElementById("menuBtn");
+
+    // Toggle menu
+    menuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
     });
 
     // Page Switching
     function showPage(pageId) {
       document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
       document.getElementById(pageId).classList.remove("hidden");
+    }
+
+    // Navigate + close mobile menu
+    function navigate(pageId) {
+      showPage(pageId);
+      mobileMenu.classList.add("hidden");
     }
 
     // Modal
