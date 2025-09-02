@@ -141,40 +141,84 @@
 
   <!-- Scripts -->
   <script>
-    const mobileMenu = document.getElementById("mobileMenu");
-    const menuBtn = document.getElementById("menuBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const menuBtn = document.getElementById("menuBtn");
 
-    // Toggle menu
-    menuBtn.addEventListener("click", () => {
-      mobileMenu.classList.toggle("hidden");
-    });
+  // Toggle menu
+  menuBtn.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+  });
 
-    // Page Switching
-    function showPage(pageId) {
-      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-      document.getElementById(pageId).classList.remove("hidden");
-    }
+  // Page Switching
+  function showPage(pageId) {
+    document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
+    document.getElementById(pageId).classList.remove("hidden");
+  }
 
-    // Navigate + close mobile menu
-    function navigate(pageId) {
-      showPage(pageId);
-      mobileMenu.classList.add("hidden");
-    }
+  // Navigate + close mobile menu
+  function navigate(pageId) {
+    showPage(pageId);
+    mobileMenu.classList.add("hidden");
+  }
 
-    // Modal
-    function openModal() {
-      document.getElementById("walletModal").classList.remove("hidden");
+  // Modal
+  function openModal() {
+    document.getElementById("walletModal").classList.remove("hidden");
+  }
+  function closeModal() {
+    document.getElementById("walletModal").classList.add("hidden");
+  }
+
+  // ==============================
+  // Wallet Connection Functions
+  // ==============================
+  async function connectMetaMask() {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const account = accounts[0];
+        alert("MetaMask connected: " + account);
+        document.getElementById("connectBtn").innerText = account.substring(0, 6) + "..." + account.slice(-4);
+        closeModal();
+      } catch (error) {
+        console.error(error);
+        alert("MetaMask connection failed!");
+      }
+    } else {
+      alert("MetaMask belum terpasang. Silakan install di browser Anda!");
     }
-    function closeModal() {
-      document.getElementById("walletModal").classList.add("hidden");
+  }
+
+  async function connectOKX() {
+    if (window.okxwallet && window.okxwallet.request) {
+      try {
+        const accounts = await window.okxwallet.request({ method: 'eth_requestAccounts' });
+        const account = accounts[0];
+        alert("OKX connected: " + account);
+        document.getElementById("connectBtn").innerText = account.substring(0, 6) + "..." + account.slice(-4);
+        closeModal();
+      } catch (error) {
+        console.error(error);
+        alert("OKX connection failed!");
+      }
+    } else {
+      alert("OKX Wallet belum terpasang. Silakan install di browser Anda!");
     }
-    function selectWallet(wallet) {
-      alert("Wallet selected: " + wallet);
+  }
+
+  function selectWallet(wallet) {
+    if (wallet === "metamask") {
+      connectMetaMask();
+    } else if (wallet === "okx") {
+      connectOKX();
+    } else {
+      alert(wallet + " belum didukung penuh.");
       closeModal();
     }
+  }
 
-    // Default Page
-    showPage("home");
-  </script>
+  // Default Page
+  showPage("home");
+</script>
 </body>
 </html>
