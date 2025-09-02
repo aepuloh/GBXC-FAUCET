@@ -83,7 +83,7 @@
       <div class="bg-white rounded-xl shadow p-6">
         <label class="block text-left font-semibold mb-2">Amount BNB</label>
         <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
-        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
+        <button onclick="buyToken()" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
       </div>
     </section>
 
@@ -95,7 +95,7 @@
         <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
         <label class="block text-left font-semibold mb-2">To</label>
         <input type="text" disabled value="KNC" class="w-full border rounded-lg p-2 mb-4 bg-gray-100" />
-        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Swap</button>
+        <button onclick="swapToken()" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Swap</button>
       </div>
     </section>
 
@@ -140,41 +140,14 @@
   </div>
 
   <!-- Scripts -->
-  <script>
-    const mobileMenu = document.getElementById("mobileMenu");
-    const menuBtn = document.getElementById("menuBtn");
+  <!-- Web3.js -->
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <!-- Coinbase Wallet SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk/dist/CoinbaseWalletSDK.min.js"></script>
 
-    // Toggle menu
-    menuBtn.addEventListener("click", () => {
-      mobileMenu.classList.toggle("hidden");
-    });
-
-    // Page Switching
-    function showPage(pageId) {
-      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-      document.getElementById(pageId).classList.remove("hidden");
-    }
-
-    // Navigate + close mobile menu
-    function navigate(pageId) {
-      showPage(pageId);
-      mobileMenu.classList.add("hidden");
-    }
-
-    // Modal
-    function openModal() {
-      document.getElementById("walletModal").classList.remove("hidden");
-    }
-    function closeModal() {
-      document.getElementById("walletModal").classList.add("hidden");
-    }
-    function selectWallet(wallet) {
-      alert("Wallet selected: " + wallet);
-      closeModal();
-    }
-
-    // Default Page
-    showPage("home");
-  </script>
+  <!-- Config & Wallet Scripts -->
+  <script src="config.js"></script>
+  <script src="wallet.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>
