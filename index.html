@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KenariCoin (KN)</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Update ethers ke versi stabil -->
+  <!-- Ethers.js -->
   <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-yellow-100 to-white flex flex-col items-center justify-center p-6">
@@ -40,17 +40,33 @@
     © <span id="year"></span> KenariCoin. All rights reserved.
   </footer>
 
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
   <script>
     // Tahun otomatis
     document.getElementById("year").innerText = new Date().getFullYear();
 
-    // Kontrak token KenariCoin (mainnet)
+    // Kontrak token KenariCoin (BSC Mainnet)
     const tokenAddress = "0x0B70E29a77775E9aa2F7A7c66C371B411d4D685c";
     const tokenABI = [
       "function balanceOf(address owner) view returns (uint256)",
       "function decimals() view returns (uint8)",
       "function symbol() view returns (string)"
     ];
+
+    // BSC Mainnet config
+    const BSC_PARAMS = {
+      chainId: "0x38", // 56 desimal
+      chainName: "Binance Smart Chain",
+      nativeCurrency: {
+        name: "Binance Coin",
+        symbol: "BNB",
+        decimals: 18
+      },
+      rpcUrls: ["https://bsc-dataseed.binance.org/"],
+      blockExplorerUrls: ["https://bscscan.com/"]
+    };
 
     let provider, signer, account;
 
@@ -59,31 +75,30 @@
     const buyBtn = document.getElementById("buyBtn");
     const balanceText = document.getElementById("balanceText");
 
-    // Connect Wallet
-    connectBtn.addEventListener("click", async () => {
-      if (window.ethereum) {
-        try {
-          // request account langsung via ethereum
-          await window.ethereum.request({ method: "eth_requestAccounts" });
+    // === TOAST NOTIFICATION ===
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
 
-          provider = new ethers.providers.Web3Provider(window.ethereum);
-          signer = provider.getSigner();
-          account = await signer.getAddress();
+      let bg = "bg-gray-800";
+      if (type === "success") bg = "bg-green-600";
+      if (type === "error") bg = "bg-red-600";
+      if (type === "warning") bg = "bg-yellow-500";
 
-          connectBtn.innerText = "Connected: " + account.slice(0,6) + "..." + account.slice(-4);
+      toast.className = `${bg} text-white px-4 py-2 rounded-lg shadow-md animate-fadeIn`;
+      toast.innerText = message;
 
-          balanceBtn.classList.remove("hidden");
-          buyBtn.classList.remove("hidden");
-        } catch (err) {
-          console.error("Wallet connect error:", err);
-        }
-      } else {
-        alert("Please install MetaMask!");
-      }
-    });
+      container.appendChild(toast);
 
-    // Check Balance
-    balanceBtn.addEventListener("click", async () => {
+      // Hapus otomatis setelah 3 detik
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "transition", "duration-500");
+        setTimeout(() => toast.remove(), 500);
+      }, 3000);
+    }
+
+    // Fungsi ambil saldo
+    async function updateBalance() {
       if (!provider || !account) return;
       try {
         const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
@@ -94,13 +109,105 @@
         balanceText.innerText = `Your Balance: ${formatted} ${symbol}`;
       } catch (err) {
         console.error("Error reading balance:", err);
+        showToast("Failed to fetch balance", "error");
+      }
+    }
+
+    // Connect Wallet
+    connectBtn.addEventListener("click", async () => {
+      if (window.ethereum) {
+        try {
+          // Cek chain dulu
+          const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+          if (currentChainId !== BSC_PARAMS.chainId) {
+            try {
+              // switch chain
+              await window.ethereum.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: BSC_PARAMS.chainId }]
+              });
+              showToast("Switched to BSC Mainnet ✅", "success");
+            } catch (switchError) {
+              // kalau chain belum ditambahkan
+              if (switchError.code === 4902) {
+                await window.ethereum.request({
+                  method: "wallet_addEthereumChain",
+                  params: [BSC_PARAMS]
+                });
+                showToast("BSC Mainnet added & selected ✅", "success");
+              } else {
+                throw switchError;
+              }
+            }
+          }
+
+          // Request account
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          account = accounts[0];
+
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+
+          connectBtn.innerText = "Connected: " + account.slice(0,6) + "..." + account.slice(-4);
+
+          balanceBtn.classList.remove("hidden");
+          buyBtn.classList.remove("hidden");
+
+          showToast("Wallet connected ✅", "success");
+
+          // langsung update saldo
+          await updateBalance();
+
+        } catch (err) {
+          console.error("Wallet connect error:", err);
+          showToast("Failed to connect wallet", "error");
+        }
+      } else {
+        showToast("Please install a Web3 wallet (MetaMask, Trust Wallet, dll)", "warning");
       }
     });
+
+    // Manual cek saldo
+    balanceBtn.addEventListener("click", updateBalance);
 
     // Buy Token on PancakeSwap
     buyBtn.addEventListener("click", () => {
       window.open(`https://pancakeswap.finance/swap?outputCurrency=${tokenAddress}`, "_blank");
     });
+
+    // 🔔 Deteksi kalau user ganti jaringan
+    if (window.ethereum) {
+      window.ethereum.on("chainChanged", async (chainId) => {
+        if (chainId !== BSC_PARAMS.chainId) {
+          showToast("⚠️ Please switch to Binance Smart Chain (BSC)", "warning");
+          balanceText.innerText = "";
+        } else {
+          showToast("✅ Connected to BSC Mainnet", "success");
+          if (account) {
+            await updateBalance();
+          }
+        }
+      });
+
+      // 🔔 Deteksi kalau user ganti akun
+      window.ethereum.on("accountsChanged", async (accounts) => {
+        if (accounts.length === 0) {
+          account = null;
+          balanceText.innerText = "";
+          connectBtn.innerText = "Connect Wallet";
+          balanceBtn.classList.add("hidden");
+          buyBtn.classList.add("hidden");
+          showToast("Wallet disconnected", "warning");
+        } else {
+          account = accounts[0];
+          connectBtn.innerText = "Connected: " + account.slice(0,6) + "..." + account.slice(-4);
+          showToast("Account changed", "info");
+          if (provider) {
+            await updateBalance();
+          }
+        }
+      });
+    }
   </script>
 
   <style>
@@ -109,7 +216,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fadeIn {
-      animation: fadeIn 0.8s ease-out;
+      animation: fadeIn 0.3s ease-out;
     }
   </style>
 </body>
