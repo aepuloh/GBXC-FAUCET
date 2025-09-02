@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KenariCoin (KN) - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-yellow-100 to-white flex flex-col items-center justify-center p-6">
+
+  <h1 class="text-3xl font-bold mb-6">KenariCoin Dashboard</h1>
+  
+  <p id="accountText" class="mb-4 text-gray-700"></p>
+  
+  <button id="balanceBtn" class="rounded-2xl px-6 py-3 text-lg bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg transition">
+    Check Balance
+  </button>
+  <button id="buyBtn" class="rounded-2xl px-6 py-3 text-lg bg-blue-500 hover:bg-blue-600 text-white font-bold shadow-lg transition mt-4">
+    Buy KN on PancakeSwap
+  </button>
+
+  <p id="balanceText" class="text-gray-800 font-medium mt-4"></p>
+
+  <script>
+    const tokenAddress = "0x0B70E29a77775E9aa2F7A7c66C371B411d4D685c";
+    const tokenABI = [
+      "function balanceOf(address owner) view returns (uint256)",
+      "function decimals() view returns (uint8)",
+      "function symbol() view returns (string)"
+    ];
+
+    let provider, signer, account;
+    const accountText = document.getElementById("accountText");
+    const balanceBtn = document.getElementById("balanceBtn");
+    const balanceText = document.getElementById("balanceText");
+    const buyBtn = document.getElementById("buyBtn");
+
+    async function checkNetwork() {
+      try {
+        const chainId = await provider.send("eth_chainId", []);
+        if (parseInt(chainId, 16) !== 56) {
+          try {
+            // minta switch ke BSC Mainnet
+            await provider.send("wallet_switchEthereumChain", [{ chainId: "0x38" }]);
+          } catch (switchError) {
+            if (switchError.code === 4902) {
+              // kalau belum ada BSC di wallet → tambah dulu
+              await provider.send("wallet_addEthereumChain", [{
+                chainId: "0x38",
+                chainName: "Binance Smart Chain",
+                nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+                rpcUrls: ["https://bsc-dataseed.binance.org/"],
+                blockExplorerUrls: ["https://bscscan.com/"]
+              }]);
+            } else {
+              alert("Please switch to Binance Smart Chain (BSC Mainnet)!");
+              window.location.href = "index.html";
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Network check failed:", err);
+        alert("Error checking network!");
+        window.location.href = "index.html";
+      }
+    }
+
+    async function init() {
+      account = localStorage.getItem("connectedAccount");
+      if (!account) {
+        window.location.href = "index.html"; // kalau belum connect balik lagi
+        return;
+      }
+
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+
+      await checkNetwork(); // 🚨 wajib cek jaringan BSC
+
+      accountText.innerText = "Connected: " + account;
+    }
+
+    balanceBtn.addEventListener("click", async () => {
+      try {
+        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
+        const balance = await contract.balanceOf(account);
+        const decimals = await contract.decimals();
+        const symbol = await contract.symbol();
+        const formatted = ethers.utils.formatUnits(balance, decimals);
+        balanceText.innerText = `Your Balance: ${formatted} ${symbol}`;
+      } catch (err) {
+        balanceText.innerText = "Error fetching balance!";
+        console.error(err);
+      }
+    });
+
+    buyBtn.addEventListener("click", () => {
+      window.open(`https://pancakeswap.finance/swap?outputCurrency=${tokenAddress}`, "_blank");
+    });
+
+    init();
+  </script>
+</body>
+</html>
