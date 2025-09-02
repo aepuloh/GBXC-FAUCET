@@ -1,21 +1,24 @@
-// Toggle Mobile Menu
-const menuBtn = document.getElementById("menuBtn");
-const mobileMenu = document.getElementById("mobileMenu");
+// ==============================
+// UI Control
+// ==============================
 
-if (menuBtn) {
-  menuBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-  });
+// Page Switching
+function showPage(pageId) {
+  document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
+  const target = document.getElementById(pageId);
+  if (target) {
+    target.classList.remove("hidden");
+  }
 }
 
-// Tutup menu setelah pilih link
+// Mobile Menu auto close
 document.querySelectorAll("#mobileMenu a").forEach(link => {
   link.addEventListener("click", () => {
-    mobileMenu.classList.add("hidden");
+    document.getElementById("mobileMenu").classList.add("hidden");
   });
 });
 
-// Modal
+// Modal Control
 function openModal() {
   document.getElementById("walletModal").classList.remove("hidden");
 }
@@ -23,13 +26,25 @@ function closeModal() {
   document.getElementById("walletModal").classList.add("hidden");
 }
 
-// Page navigation
-function showPage(pageId) {
-  document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(pageId).classList.remove("hidden");
+// Update UI when connected
+function updateUIConnected() {
+  const connectBtn = document.getElementById("connectBtn");
+  connectBtn.innerText = "🔌 Disconnect Wallet";
+  connectBtn.onclick = disconnectWallet;
+  connectBtn.classList.remove("bg-yellow-500", "hover:bg-yellow-600");
+  connectBtn.classList.add("bg-red-500", "hover:bg-red-600");
 }
 
-// Default tampil halaman contact sampai wallet connect
-if (document.querySelector("main")) {
-  showPage("home");
+// Update UI when disconnected
+function updateUIDisconnected() {
+  const connectBtn = document.getElementById("connectBtn");
+  connectBtn.innerText = "Connect Wallet";
+  connectBtn.onclick = openModal;
+  connectBtn.classList.remove("bg-red-500", "hover:bg-red-600");
+  connectBtn.classList.add("bg-yellow-500", "hover:bg-yellow-600");
 }
+
+// Default Page
+document.addEventListener("DOMContentLoaded", () => {
+  showPage("home");
+});
