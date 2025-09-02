@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KenariCoin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="img/logo.png">
 </head>
 <body class="bg-gradient-to-br from-yellow-100 to-yellow-50 min-h-screen flex flex-col">
@@ -36,7 +34,7 @@
         </button>
         <!-- Mobile Hamburger -->
         <div class="md:hidden">
-          <button id="menuBtn" class="focus:outline-none" aria-label="Toggle Menu">
+          <button id="menuBtn" class="focus:outline-none">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 6h16M4 12h16M4 18h16"/>
@@ -47,13 +45,13 @@
     </div>
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
-      <a href="#" onclick="showPage('home')" class="block py-2 hover:text-yellow-500">Home</a>
-      <a href="#" onclick="showPage('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
-      <a href="#" onclick="showPage('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
-      <a href="#" onclick="showPage('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
-      <a href="#" onclick="showPage('task')" class="block py-2 hover:text-yellow-500">Task Earn</a>
-      <a href="#" onclick="showPage('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
-      <a href="#" onclick="showPage('about')" class="block py-2 hover:text-yellow-500">About</a>
+      <a href="#" onclick="navigate('home')" class="block py-2 hover:text-yellow-500">Home</a>
+      <a href="#" onclick="navigate('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
+      <a href="#" onclick="navigate('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
+      <a href="#" onclick="navigate('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
+      <a href="#" onclick="navigate('task')" class="block py-2 hover:text-yellow-500">Task Earn</a>
+      <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
+      <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
     </div>
   </nav>
 
@@ -84,8 +82,8 @@
       <h2 class="text-2xl font-bold mb-4">Buy KenariCoin</h2>
       <div class="bg-white rounded-xl shadow p-6">
         <label class="block text-left font-semibold mb-2">Amount BNB</label>
-        <input id="buyAmount" type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
-        <button onclick="buyToken()" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
+        <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
+        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
       </div>
     </section>
 
@@ -93,11 +91,11 @@
     <section id="swap" class="hidden max-w-md mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Swap</h2>
       <div class="bg-white rounded-xl shadow p-6">
-        <label class="block text-left font-semibold mb-2">From (BNB/KNC amount)</label>
-        <input id="swapAmount" type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
+        <label class="block text-left font-semibold mb-2">From</label>
+        <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
         <label class="block text-left font-semibold mb-2">To</label>
         <input type="text" disabled value="KNC" class="w-full border rounded-lg p-2 mb-4 bg-gray-100" />
-        <button onclick="swapToken()" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Swap</button>
+        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Swap</button>
       </div>
     </section>
 
@@ -141,10 +139,42 @@
     </div>
   </div>
 
-  <!-- Scripts (URUTAN WAJIB) -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-  <script src="config.js"></script>
-  <script src="ui.js"></script>
-  <script src="wallet.js"></script>
+  <!-- Scripts -->
+  <script>
+    const mobileMenu = document.getElementById("mobileMenu");
+    const menuBtn = document.getElementById("menuBtn");
+
+    // Toggle menu
+    menuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+    });
+
+    // Page Switching
+    function showPage(pageId) {
+      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
+      document.getElementById(pageId).classList.remove("hidden");
+    }
+
+    // Navigate + close mobile menu
+    function navigate(pageId) {
+      showPage(pageId);
+      mobileMenu.classList.add("hidden");
+    }
+
+    // Modal
+    function openModal() {
+      document.getElementById("walletModal").classList.remove("hidden");
+    }
+    function closeModal() {
+      document.getElementById("walletModal").classList.add("hidden");
+    }
+    function selectWallet(wallet) {
+      alert("Wallet selected: " + wallet);
+      closeModal();
+    }
+
+    // Default Page
+    showPage("home");
+  </script>
 </body>
 </html>
