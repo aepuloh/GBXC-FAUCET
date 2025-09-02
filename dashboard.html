@@ -4,66 +4,102 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KenariCoin Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
 </head>
-<body class="bg-gray-800 text-white flex items-center justify-center min-h-screen">
-  <div class="bg-gray-900 p-6 rounded-2xl shadow-xl w-96 text-center">
-    <h1 class="text-2xl font-bold mb-4">KenariCoin Dashboard</h1>
-    <p id="walletAddress">Loading...</p>
-    <p id="balance" class="mt-2">Checking balance...</p>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
 
-    <hr class="my-4 border-gray-700">
+  <div class="bg-gradient-to-r from-blue-800 to-purple-900 p-6 rounded-2xl shadow-xl text-center w-[90%] max-w-md">
+    
+    <!-- Header -->
+    <h2 class="text-2xl font-bold text-white mb-4">KenariCoin Dashboard</h2>
+    
+    <!-- Wallet Info -->
+    <p class="text-gray-200">Address:</p>
+    <p id="userAddress" class="text-green-400 break-all text-sm">Not connected</p>
+    
+    <p class="text-gray-200 mt-2">Balance:</p>
+    <p id="userBalance" class="text-yellow-400">0 BNB</p>
 
-    <h2 class="text-lg font-semibold">Contract Address</h2>
-    <p id="contract" class="text-yellow-400 break-all">
+    <hr class="my-4 border-gray-500">
+
+    <!-- Contract Info -->
+    <h3 class="text-lg font-semibold text-yellow-400">Contract Address</h3>
+    <p id="contractAddress" class="text-yellow-300 break-all text-sm">
       0x1390f63AF92448c46368443496a2bfc1469558de
     </p>
-    <button onclick="copyContract()" class="mt-2 px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-400">Copy</button>
+    <button onclick="copyContract()" class="bg-yellow-500 text-black px-3 py-1 rounded mt-2">Copy</button>
 
-    <hr class="my-4 border-gray-700">
+    <!-- Action Buttons -->
+    <div class="grid grid-cols-2 gap-3 mt-6">
+      <a href="https://pancakeswap.finance/swap?outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de" 
+         target="_blank" 
+         class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
+         Buy PCS
+      </a>
+      
+      <a href="https://pancakeswap.finance/swap" 
+         target="_blank" 
+         class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+         Swap
+      </a>
+      
+      <button onclick="alert('Task system coming soon!')" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded">
+        Tasks
+      </button>
 
-    <button onclick="logout()" class="px-6 py-2 bg-red-600 rounded-lg hover:bg-red-500">Disconnect</button>
+      <button onclick="disconnectWallet()" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
+        Disconnect
+      </button>
+    </div>
+
+    <!-- Wallet Connect -->
+    <button onclick="connectWallet()" id="connectBtn" class="bg-indigo-500 hover:bg-indigo-600 w-full mt-6 text-white font-semibold py-2 px-4 rounded">
+      Connect Wallet
+    </button>
   </div>
 
   <script>
     const contractAddress = "0x1390f63AF92448c46368443496a2bfc1469558de";
 
-    async function loadWallet() {
-      const wallet = localStorage.getItem("kenari_wallet");
-
-      // kalau belum connect → balik ke index
-      if (!wallet) {
-        window.location.href = "index.html";
-        return;
-      }
-
-      document.getElementById("walletAddress").innerText = "Address: " + wallet;
-
-      if (window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        try {
-          const balance = await provider.getBalance(wallet);
-          document.getElementById("balance").innerText =
-            "Balance: " + ethers.utils.formatEther(balance) + " BNB";
-        } catch {
-          document.getElementById("balance").innerText = "Balance: Failed to load";
-        }
-      }
-    }
-
+    // Copy contract address
     function copyContract() {
-      navigator.clipboard.writeText(contractAddress).then(() => {
-        alert("Contract address copied: " + contractAddress);
-      });
+      navigator.clipboard.writeText(contractAddress);
+      alert("Contract copied: " + contractAddress);
     }
 
-    function logout() {
-      localStorage.removeItem("kenari_wallet");
-      window.location.href = "index.html";
+    // Connect wallet
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+          const account = accounts[0];
+          document.getElementById("userAddress").innerText = account;
+          document.getElementById("connectBtn").style.display = "none";
+
+          // Load Web3
+          window.web3 = new Web3(window.ethereum);
+
+          // Get balance
+          let balance = await web3.eth.getBalance(account);
+          balance = web3.utils.fromWei(balance, "ether");
+          document.getElementById("userBalance").innerText = balance + " BNB";
+        } catch (error) {
+          console.error(error);
+          alert("Failed to connect wallet!");
+        }
+      } else {
+        alert("Please install MetaMask!");
+      }
     }
 
-    loadWallet();
+    // Disconnect wallet
+    function disconnectWallet() {
+      document.getElementById("userAddress").innerText = "Not connected";
+      document.getElementById("userBalance").innerText = "0 BNB";
+      document.getElementById("connectBtn").style.display = "block";
+    }
   </script>
+
 </body>
 </html>
