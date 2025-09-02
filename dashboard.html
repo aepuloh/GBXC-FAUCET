@@ -1,105 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KenariCoin (KN) - Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KenariCoin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="min-h-screen bg-gradient-to-b from-yellow-100 to-white flex flex-col items-center justify-center p-6">
+<body class="bg-gray-800 text-white flex items-center justify-center min-h-screen">
+  <div class="bg-gray-900 p-6 rounded-2xl shadow-xl w-96 text-center">
+    <h1 class="text-2xl font-bold mb-4">KenariCoin Dashboard</h1>
+    <p id="walletAddress">Loading...</p>
+    <p id="balance" class="mt-2">Checking balance...</p>
 
-  <h1 class="text-3xl font-bold mb-6">KenariCoin Dashboard</h1>
-  
-  <p id="accountText" class="mb-4 text-gray-700"></p>
-  
-  <button id="balanceBtn" class="rounded-2xl px-6 py-3 text-lg bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg transition">
-    Check Balance
-  </button>
-  <button id="buyBtn" class="rounded-2xl px-6 py-3 text-lg bg-blue-500 hover:bg-blue-600 text-white font-bold shadow-lg transition mt-4">
-    Buy KN on PancakeSwap
-  </button>
+    <hr class="my-4 border-gray-700">
 
-  <p id="balanceText" class="text-gray-800 font-medium mt-4"></p>
+    <h2 class="text-lg font-semibold">Contract Address</h2>
+    <p id="contract" class="text-yellow-400 break-all">
+      0x1390f63AF92448c46368443496a2bfc1469558de
+    </p>
+    <button onclick="copyContract()" class="mt-2 px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-400">Copy</button>
+
+    <hr class="my-4 border-gray-700">
+
+    <button onclick="logout()" class="px-6 py-2 bg-red-600 rounded-lg hover:bg-red-500">Disconnect</button>
+  </div>
 
   <script>
-    const tokenAddress = "0x0B70E29a77775E9aa2F7A7c66C371B411d4D685c";
-    const tokenABI = [
-      "function balanceOf(address owner) view returns (uint256)",
-      "function decimals() view returns (uint8)",
-      "function symbol() view returns (string)"
-    ];
+    const contractAddress = "0x1390f63AF92448c46368443496a2bfc1469558de";
 
-    let provider, signer, account;
-    const accountText = document.getElementById("accountText");
-    const balanceBtn = document.getElementById("balanceBtn");
-    const balanceText = document.getElementById("balanceText");
-    const buyBtn = document.getElementById("buyBtn");
+    async function loadWallet() {
+      const wallet = localStorage.getItem("kenari_wallet");
 
-    async function checkNetwork() {
-      try {
-        const chainId = await provider.send("eth_chainId", []);
-        if (parseInt(chainId, 16) !== 56) {
-          try {
-            // minta switch ke BSC Mainnet
-            await provider.send("wallet_switchEthereumChain", [{ chainId: "0x38" }]);
-          } catch (switchError) {
-            if (switchError.code === 4902) {
-              // kalau belum ada BSC di wallet → tambah dulu
-              await provider.send("wallet_addEthereumChain", [{
-                chainId: "0x38",
-                chainName: "Binance Smart Chain",
-                nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
-                rpcUrls: ["https://bsc-dataseed.binance.org/"],
-                blockExplorerUrls: ["https://bscscan.com/"]
-              }]);
-            } else {
-              alert("Please switch to Binance Smart Chain (BSC Mainnet)!");
-              window.location.href = "index.html";
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Network check failed:", err);
-        alert("Error checking network!");
+      // kalau belum connect → balik ke index
+      if (!wallet) {
         window.location.href = "index.html";
-      }
-    }
-
-    async function init() {
-      account = localStorage.getItem("connectedAccount");
-      if (!account) {
-        window.location.href = "index.html"; // kalau belum connect balik lagi
         return;
       }
 
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      signer = provider.getSigner();
+      document.getElementById("walletAddress").innerText = "Address: " + wallet;
 
-      await checkNetwork(); // 🚨 wajib cek jaringan BSC
-
-      accountText.innerText = "Connected: " + account;
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        try {
+          const balance = await provider.getBalance(wallet);
+          document.getElementById("balance").innerText =
+            "Balance: " + ethers.utils.formatEther(balance) + " BNB";
+        } catch {
+          document.getElementById("balance").innerText = "Balance: Failed to load";
+        }
+      }
     }
 
-    balanceBtn.addEventListener("click", async () => {
-      try {
-        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-        const balance = await contract.balanceOf(account);
-        const decimals = await contract.decimals();
-        const symbol = await contract.symbol();
-        const formatted = ethers.utils.formatUnits(balance, decimals);
-        balanceText.innerText = `Your Balance: ${formatted} ${symbol}`;
-      } catch (err) {
-        balanceText.innerText = "Error fetching balance!";
-        console.error(err);
-      }
-    });
+    function copyContract() {
+      navigator.clipboard.writeText(contractAddress).then(() => {
+        alert("Contract address copied: " + contractAddress);
+      });
+    }
 
-    buyBtn.addEventListener("click", () => {
-      window.open(`https://pancakeswap.finance/swap?outputCurrency=${tokenAddress}`, "_blank");
-    });
+    function logout() {
+      localStorage.removeItem("kenari_wallet");
+      window.location.href = "index.html";
+    }
 
-    init();
+    loadWallet();
   </script>
 </body>
 </html>
