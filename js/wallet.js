@@ -1,9 +1,6 @@
 let web3;
 let currentAccount = null;
 
-// =======================
-// GANTI / SWITCH NETWORK
-// =======================
 async function switchNetwork() {
   if (!window.ethereum) return;
   try {
@@ -21,103 +18,28 @@ async function switchNetwork() {
   }
 }
 
-// =======================
-// CONNECT WALLET
-// =======================
 async function selectWallet(type) {
+  if (!window.ethereum) {
+    alert("❌ Wallet extension tidak terdeteksi.");
+    return;
+  }
   try {
-    // ==== MetaMask & Binance ====
-    if (type === "metamask" || type === "binance") {
-      if (!window.ethereum) {
-        alert("❌ Wallet tidak terdeteksi.");
-        return;
-      }
-      if (type === "metamask" && !window.ethereum.isMetaMask) {
-        alert("❌ MetaMask tidak ditemukan.");
-        return;
-      }
-      if (type === "binance" && !window.ethereum.isBinance) {
-        alert("❌ Binance Wallet tidak ditemukan.");
-        return;
-      }
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    currentAccount = accounts[0];
+    web3 = new Web3(window.ethereum);
+    await switchNetwork();
 
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      currentAccount = accounts[0];
-      web3 = new Web3(window.ethereum);
-      await switchNetwork();
+    updateUIConnected();
+    closeModal();
+    showPage("home");
 
-      updateUIConnected();
-      closeModal();
-      showPage("wallet");
-      loadBalances();
-    }
-
-    // ==== Coinbase ====
-    else if (type === "coinbase") {
-      if (typeof CoinbaseWalletSDK === "undefined") {
-        alert("❌ Coinbase Wallet SDK belum dimuat.");
-        return;
-      }
-      const coinbaseWallet = new CoinbaseWalletSDK({
-        appName: "KenariCoin Dashboard",
-        appLogoUrl: "img/logo.png",
-        darkMode: false
-      });
-      const provider = coinbaseWallet.makeWeb3Provider(CONFIG.network.rpcUrls[0], parseInt(CONFIG.network.chainId, 16));
-      web3 = new Web3(provider);
-
-      const accounts = await provider.request({ method: "eth_requestAccounts" });
-      currentAccount = accounts[0];
-
-      updateUIConnected();
-      closeModal();
-      showPage("wallet");
-      loadBalances();
-    }
-
-    // ==== Bitget ====
-    else if (type === "bitget") {
-      if (!window.bitkeep && !window.bitget) {
-        alert("❌ Bitget Wallet tidak terdeteksi.");
-        return;
-      }
-      const provider = window.bitkeep?.ethereum || window.bitget?.ethereum;
-      web3 = new Web3(provider);
-
-      const accounts = await provider.request({ method: "eth_requestAccounts" });
-      currentAccount = accounts[0];
-
-      updateUIConnected();
-      closeModal();
-      showPage("wallet");
-      loadBalances();
-    }
-
-    // ==== OKX ====
-    else if (type === "okx") {
-      if (!window.okxwallet) {
-        alert("❌ OKX Wallet tidak terdeteksi.");
-        return;
-      }
-      web3 = new Web3(window.okxwallet);
-
-      const accounts = await window.okxwallet.request({ method: "eth_requestAccounts" });
-      currentAccount = accounts[0];
-
-      updateUIConnected();
-      closeModal();
-      showPage("wallet");
-      loadBalances();
-    }
+    // 🚀 Ambil saldo setelah connect
+    loadBalances();
   } catch (error) {
     console.error("❌ Wallet connection failed:", error);
-    alert("❌ Gagal connect: " + error.message);
   }
 }
 
-// =======================
-// DISCONNECT WALLET
-// =======================
 function disconnectWallet() {
   currentAccount = null;
   web3 = null;
@@ -129,9 +51,7 @@ function disconnectWallet() {
   document.getElementById("tokenBalance").innerText = "0 " + CONFIG.token.symbol;
 }
 
-// =======================
-// UPDATE UI
-// =======================
+// UI update
 function updateUIConnected() {
   const connectBtn = document.getElementById("connectBtn");
   connectBtn.innerText = "🔌 Disconnect Wallet";
@@ -148,9 +68,7 @@ function updateUIDisconnected() {
   connectBtn.classList.add("bg-yellow-500", "hover:bg-yellow-600");
 }
 
-// =======================
-// AMBIL SALDO
-// =======================
+// 🚀 Fungsi ambil saldo BNB & Token
 async function loadBalances() {
   if (!web3 || !currentAccount) return;
 
@@ -161,7 +79,16 @@ async function loadBalances() {
     document.getElementById("bnbBalance").innerText = `${parseFloat(formattedBNB).toFixed(4)} BNB`;
 
     // Ambil saldo token KNC (ERC20 standard)
-    const token = new web3.eth.Contract(CONFIG.token.abi, CONFIG.token.contractAddress);
+    const tokenAbi = [
+      {
+        "constant": true,
+        "inputs": [{ "name": "owner", "type": "address" }],
+        "name": "balanceOf",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+      }
+    ];
+    const token = new web3.eth.Contract(tokenAbi, CONFIG.token.contractAddress);
     const balanceKNC = await token.methods.balanceOf(currentAccount).call();
     const formattedKNC = balanceKNC / 10 ** CONFIG.token.decimals;
     document.getElementById("tokenBalance").innerText = `${formattedKNC.toFixed(2)} ${CONFIG.token.symbol}`;
@@ -170,9 +97,7 @@ async function loadBalances() {
   }
 }
 
-// =======================
-// AUTO HANDLE EVENTS
-// =======================
+// Auto handle disconnect / ganti akun
 if (window.ethereum) {
   window.ethereum.on("accountsChanged", (accounts) => {
     if (accounts.length === 0) {
@@ -183,7 +108,6 @@ if (window.ethereum) {
     }
   });
 }
-
 // =======================
 // BUY TOKEN
 // =======================
@@ -201,13 +125,12 @@ async function buyToken() {
 
     const tx = await web3.eth.sendTransaction({
       from: currentAccount,
-      to: CONFIG.token.contractAddress, // kontrak token (pastikan support menerima BNB)
+      to: CONFIG.token.contractAddress, // kontrak token (pastikan ada fungsi receive BNB → mint KNC)
       value: web3.utils.toWei(amountBNB, "ether"),
     });
 
     console.log("✅ Buy berhasil:", tx);
     alert("✅ Buy sukses! Tx Hash: " + tx.transactionHash);
-    loadBalances();
   } catch (err) {
     console.error("❌ Buy gagal:", err);
     alert("❌ Buy gagal: " + err.message);
@@ -238,7 +161,6 @@ async function swapToken() {
 
     console.log("✅ Swap berhasil:", tx);
     alert("✅ Swap sukses! Tx Hash: " + tx.transactionHash);
-    loadBalances();
   } catch (err) {
     console.error("❌ Swap gagal:", err);
     alert("❌ Swap gagal: " + err.message);
