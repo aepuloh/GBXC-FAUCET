@@ -6,7 +6,9 @@
   <title>KenariCoin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="img/logo.png">
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+
+  <!-- Ethers.js (versi UMD agar ethers dikenali di browser) -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body class="bg-gradient-to-br from-yellow-100 to-yellow-50 min-h-screen flex flex-col">
 
@@ -60,7 +62,7 @@
   <main class="flex-grow px-4 pt-24 pb-10">
 
     <!-- Home -->
-    <section id="home" class="hidden text-center">
+    <section id="home" class="text-center">
       <img src="img/logo.png" alt="KenariCoin Logo" class="w-32 h-32 rounded-full mx-auto shadow-lg">
       <h1 class="text-3xl font-bold mt-4">Selamat Datang di KenariCoin</h1>
       <p class="text-gray-600 max-w-xl mx-auto mt-2">
@@ -131,9 +133,6 @@
       <h2 class="text-lg font-bold mb-4 text-center">Connect Wallet</h2>
       <div class="space-y-3">
         <button onclick="selectWallet('metamask')" class="w-full border rounded-lg py-2 hover:bg-gray-100">🦊 MetaMask</button>
-        <button onclick="selectWallet('binance')" class="w-full border rounded-lg py-2 hover:bg-gray-100">🟡 Binance Wallet</button>
-        <button onclick="selectWallet('coinbase')" class="w-full border rounded-lg py-2 hover:bg-gray-100">💙 Coinbase Wallet</button>
-        <button onclick="selectWallet('bitget')" class="w-full border rounded-lg py-2 hover:bg-gray-100">🟢 Bitget Wallet</button>
         <button onclick="selectWallet('okx')" class="w-full border rounded-lg py-2 hover:bg-gray-100">⚫ OKX Wallet</button>
       </div>
       <button onclick="closeModal()" class="w-full mt-3 py-2 border rounded-lg hover:bg-gray-100">Cancel</button>
@@ -141,134 +140,119 @@
   </div>
 
   <!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
-<script>
-  const mobileMenu = document.getElementById("mobileMenu");
-  const menuBtn = document.getElementById("menuBtn");
+  <script>
+    const mobileMenu = document.getElementById("mobileMenu");
+    const menuBtn = document.getElementById("menuBtn");
 
-  // Toggle menu
-  menuBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-  });
+    // Toggle menu
+    menuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+    });
 
-  // Page Switching
-  function showPage(pageId) {
-    document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-    document.getElementById(pageId).classList.remove("hidden");
-  }
-
-  // Navigate + close mobile menu
-  function navigate(pageId) {
-    showPage(pageId);
-    mobileMenu.classList.add("hidden");
-  }
-
-  // Modal
-  function openModal() {
-    document.getElementById("walletModal").classList.remove("hidden");
-  }
-  function closeModal() {
-    document.getElementById("walletModal").classList.add("hidden");
-  }
-
-  // ==============================
-  // Wallet Connection Functions
-  // ==============================
-  let provider;
-  let signer;
-  let userAddress;
-
-  async function connectMetaMask() {
-  if (window.ethereum) {
-    try {
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = provider.getSigner();
-      userAddress = await signer.getAddress();
-
-      alert("MetaMask connected: " + userAddress);
-      document.getElementById("connectBtn").innerText =
-        userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
-
-      // Update saldo
-      updateBalances();
-
-      closeModal();
-    } catch (error) {
-      console.error("MetaMask error:", error);
-      alert("MetaMask connection failed!\n\n" + error.message);
+    // Page Switching
+    function showPage(pageId) {
+      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
+      document.getElementById(pageId).classList.remove("hidden");
     }
-  } else {
-    alert("MetaMask belum terpasang. Silakan install di browser Anda!");
-  }
-}
 
-  async function connectOKX() {
-    if (window.okxwallet && window.okxwallet.request) {
-      try {
-        provider = new ethers.providers.Web3Provider(window.okxwallet);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
+    // Navigate + close mobile menu
+    function navigate(pageId) {
+      showPage(pageId);
+      mobileMenu.classList.add("hidden");
+    }
 
-        alert("OKX Wallet connected: " + userAddress);
-        document.getElementById("connectBtn").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+    // Modal
+    function openModal() {
+      document.getElementById("walletModal").classList.remove("hidden");
+    }
+    function closeModal() {
+      document.getElementById("walletModal").classList.add("hidden");
+    }
 
-        // Tampilkan saldo
-        updateBalances();
+    // Wallet connection
+    let provider, signer, userAddress;
 
-        closeModal();
-      } catch (error) {
-        console.error(error);
-        alert("OKX Wallet connection failed!");
+    async function connectMetaMask() {
+      if (window.ethereum) {
+        try {
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          await provider.send("eth_requestAccounts", []);
+          signer = provider.getSigner();
+          userAddress = await signer.getAddress();
+
+          document.getElementById("connectBtn").innerText =
+            userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+
+          updateBalances();
+          closeModal();
+        } catch (err) {
+          console.error("MetaMask error:", err);
+          alert("MetaMask connection failed: " + err.message);
+        }
+      } else {
+        alert("MetaMask belum terpasang!");
       }
-    } else {
-      alert("OKX Wallet belum terpasang. Silakan install di browser Anda!");
     }
-  }
 
-  function selectWallet(wallet) {
-    if (wallet === "metamask") {
-      connectMetaMask();
-    } else if (wallet === "okx") {
-      connectOKX();
-    } else {
-      alert(wallet + " belum didukung penuh.");
-      closeModal();
+    async function connectOKX() {
+      if (window.okxwallet && window.okxwallet.request) {
+        try {
+          provider = new ethers.providers.Web3Provider(window.okxwallet);
+          await provider.send("eth_requestAccounts", []);
+          signer = provider.getSigner();
+          userAddress = await signer.getAddress();
+
+          document.getElementById("connectBtn").innerText =
+            userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+
+          updateBalances();
+          closeModal();
+        } catch (err) {
+          console.error("OKX error:", err);
+          alert("OKX connection failed: " + err.message);
+        }
+      } else {
+        alert("OKX Wallet belum terpasang!");
+      }
     }
-  }
 
-  // ==============================
-  // Balances
-  // ==============================
-  async function updateBalances() {
-    if (!provider || !userAddress) return;
-
-    try {
-      // Ambil saldo BNB (native token di BSC)
-      const balance = await provider.getBalance(userAddress);
-      const bnb = ethers.utils.formatEther(balance);
-      document.getElementById("bnbBalance").innerText = parseFloat(bnb).toFixed(4) + " BNB";
-
-      // Ambil saldo token KN (ganti alamat contract sesuai token Anda)
-      const tokenAddress = "0x1390f63AF92448c46368443496a2bfc1469558de"; // <--- GANTI dengan alamat smart contract KN
-      const tokenABI = [
-        "function balanceOf(address owner) view returns (uint256)",
-        "function decimals() view returns (uint8)"
-      ];
-      const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
-      const decimals = await tokenContract.decimals();
-      const rawBalance = await tokenContract.balanceOf(userAddress);
-      const knc = ethers.utils.formatUnits(rawBalance, decimals);
-      document.getElementById("tokenBalance").innerText = parseFloat(knc).toFixed(2) + " KNC";
-
-    } catch (err) {
-      console.error("Error fetching balances:", err);
+    function selectWallet(wallet) {
+      if (wallet === "metamask") {
+        connectMetaMask();
+      } else if (wallet === "okx") {
+        connectOKX();
+      }
     }
-  }
 
-  // Default Page
-  showPage("home");
-</script>
+    // Balances
+    async function updateBalances() {
+      if (!provider || !userAddress) return;
+
+      try {
+        // BNB balance
+        const balance = await provider.getBalance(userAddress);
+        const bnb = ethers.utils.formatEther(balance);
+        document.getElementById("bnbBalance").innerText = parseFloat(bnb).toFixed(4) + " BNB";
+
+        // KNC balance
+        const tokenAddress = "0x1390f63AF92448c46368443496a2bfc1469558de"; // GANTI alamat contract token KNC
+        const tokenABI = [
+          "function balanceOf(address owner) view returns (uint256)",
+          "function decimals() view returns (uint8)"
+        ];
+        const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
+        const decimals = await tokenContract.decimals();
+        const rawBalance = await tokenContract.balanceOf(userAddress);
+        const knc = ethers.utils.formatUnits(rawBalance, decimals);
+        document.getElementById("tokenBalance").innerText = parseFloat(knc).toFixed(2) + " KNC";
+
+      } catch (err) {
+        console.error("Error fetching balances:", err);
+      }
+    }
+
+    // Default page
+    showPage("home");
+  </script>
 </body>
 </html>
