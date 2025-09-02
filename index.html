@@ -59,7 +59,7 @@
   <main class="flex-grow px-4 pt-24 pb-10">
 
     <!-- Home -->
-<section id="home" class="hidden opacity-0 -translate-x-10 text-center">
+    <section id="home" class="hidden text-center">
       <img src="img/logo.png" alt="KenariCoin Logo" class="w-32 h-32 rounded-full mx-auto shadow-lg">
       <h1 class="text-3xl font-bold mt-4">Selamat Datang di KenariCoin</h1>
       <p class="text-gray-600 max-w-xl mx-auto mt-2">
@@ -69,7 +69,7 @@
     </section>
 
     <!-- Wallet -->
-    <section id="wallet" class="hidden opacity-0 -translate-x-10 text-center">
+    <section id="wallet" class="hidden max-w-md mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Wallet Balance</h2>
       <div class="bg-white rounded-xl shadow p-6 text-left">
         <p class="text-gray-700">BNB: <span id="bnbBalance">0 BNB</span></p>
@@ -78,29 +78,29 @@
     </section>
 
     <!-- Buy -->
-    <section id="buy" class="hidden opacity-0 -translate-x-10 text-center">
+    <section id="buy" class="hidden max-w-md mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Buy KenariCoin</h2>
       <div class="bg-white rounded-xl shadow p-6">
         <label class="block text-left font-semibold mb-2">Amount BNB</label>
         <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
-        <button onclick="buyToken()" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
+        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
       </div>
     </section>
 
     <!-- Swap -->
-<section id="swap" class="hidden opacity-0 -translate-x-10 text-center">
+    <section id="swap" class="hidden max-w-md mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Swap</h2>
       <div class="bg-white rounded-xl shadow p-6">
         <label class="block text-left font-semibold mb-2">From</label>
         <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
         <label class="block text-left font-semibold mb-2">To</label>
         <input type="text" disabled value="KNC" class="w-full border rounded-lg p-2 mb-4 bg-gray-100" />
-        <button onclick="swapToken()" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Swap</button>
+        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Swap</button>
       </div>
     </section>
 
     <!-- Task Earn -->
-    <section id="task earn" class="hidden opacity-0 -translate-x-10 text-center">
+    <section id="task" class="hidden max-w-xl mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Task Earn</h2>
       <div class="bg-white rounded-xl shadow p-6 space-y-4 text-left">
         <div><p class="font-semibold">✅ Join Telegram</p></div>
@@ -110,13 +110,13 @@
     </section>
 
     <!-- Contact -->
-    <section id="contact" class="hidden opacity-0 -translate-x-10 text-center">
+    <section id="contact" class="hidden text-center">
       <h2 class="text-2xl font-bold">Contact</h2>
       <p class="mt-2 text-gray-600">Email: support@kenaricoin.com</p>
     </section>
 
     <!-- About -->
-    <section id="about" class="hidden opacity-0 -translate-x-10 text-center">
+    <section id="about" class="hidden text-center">
       <h2 class="text-2xl font-bold">Tentang KenariCoin</h2>
       <p class="mt-2 text-gray-600 max-w-xl mx-auto">
         KenariCoin hadir untuk memberikan pengalaman baru dalam dunia crypto.
@@ -140,14 +140,41 @@
   </div>
 
   <!-- Scripts -->
-  <!-- Web3.js -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-  <!-- Coinbase Wallet SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk/dist/CoinbaseWalletSDK.min.js"></script>
+  <script>
+    const mobileMenu = document.getElementById("mobileMenu");
+    const menuBtn = document.getElementById("menuBtn");
 
-  <!-- Config & Wallet Scripts -->
-  <script src="config.js"></script>
-  <script src="wallet.js"></script>
-  <script src="ui.js"></script>
+    // Toggle menu
+    menuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+    });
+
+    // Page Switching
+    function showPage(pageId) {
+      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
+      document.getElementById(pageId).classList.remove("hidden");
+    }
+
+    // Navigate + close mobile menu
+    function navigate(pageId) {
+      showPage(pageId);
+      mobileMenu.classList.add("hidden");
+    }
+
+    // Modal
+    function openModal() {
+      document.getElementById("walletModal").classList.remove("hidden");
+    }
+    function closeModal() {
+      document.getElementById("walletModal").classList.add("hidden");
+    }
+    function selectWallet(wallet) {
+      alert("Wallet selected: " + wallet);
+      closeModal();
+    }
+
+    // Default Page
+    showPage("home");
+  </script>
 </body>
 </html>
