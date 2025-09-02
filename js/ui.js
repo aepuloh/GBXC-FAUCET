@@ -2,18 +2,18 @@
 const menuBtn = document.getElementById("menuBtn");
 const mobileMenu = document.getElementById("mobileMenu");
 
-if (menuBtn && mobileMenu) {
+if (menuBtn) {
   menuBtn.addEventListener("click", () => {
     mobileMenu.classList.toggle("hidden");
   });
-
-  // Tutup menu setelah pilih link
-  mobileMenu.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => {
-      mobileMenu.classList.add("hidden");
-    });
-  });
 }
+
+// Tutup menu setelah pilih link
+document.querySelectorAll("#mobileMenu a").forEach(link => {
+  link.addEventListener("click", () => {
+    mobileMenu.classList.add("hidden");
+  });
+});
 
 // Modal
 function openModal() {
@@ -26,11 +26,10 @@ function closeModal() {
 // Page navigation
 function showPage(pageId) {
   document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-  const target = document.getElementById(pageId);
-  if (target) target.classList.remove("hidden");
+  document.getElementById(pageId).classList.remove("hidden");
 }
 
-// Default halaman
+// Default tampil halaman contact sampai wallet connect
 if (document.querySelector("main")) {
   showPage("home");
 }

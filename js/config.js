@@ -17,7 +17,6 @@ const CONFIG = {
     decimals: 18,
     contractAddress: "0x1390f63AF92448c46368443496a2bfc1469558de",
     abi: [
-      // ✅ ABI dari contract KenariCoin kamu
       {
         "inputs": [],
         "stateMutability": "nonpayable",
@@ -45,12 +44,55 @@ const CONFIG = {
       {
         "anonymous": false,
         "inputs": [
+          { "indexed": false, "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "Paused",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
           { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
           { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
           { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }
         ],
         "name": "Transfer",
         "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": false, "internalType": "address", "name": "account", "type": "address" }
+        ],
+        "name": "Unpaused",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "INITIAL_SUPPLY",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "owner", "type": "address" },
+          { "internalType": "address", "name": "spender", "type": "address" }
+        ],
+        "name": "allowance",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "address", "name": "spender", "type": "address" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "approve",
+        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
       {
         "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
@@ -89,6 +131,20 @@ const CONFIG = {
       },
       {
         "inputs": [],
+        "name": "pause",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "paused",
+        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "symbol",
         "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
         "stateMutability": "view",
@@ -121,51 +177,21 @@ const CONFIG = {
         "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
         "stateMutability": "nonpayable",
         "type": "function"
+      },
+      {
+        "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "unpause",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       }
     ]
-  },
-
-  // ✅ PancakeSwap Router Config
-  routerAddress: "0x10ED43C718714eb63d5aA57B78B54704E256024E", // PancakeSwap V2 Router
-
-  routerAbi: [
-    {
-      "inputs": [
-        { "internalType": "uint256", "name": "amountOutMin", "type": "uint256" },
-        { "internalType": "address[]", "name": "path", "type": "address[]" },
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "deadline", "type": "uint256" }
-      ],
-      "name": "swapExactETHForTokens",
-      "outputs": [{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
-        { "internalType": "uint256", "name": "amountOutMin", "type": "uint256" },
-        { "internalType": "address[]", "name": "path", "type": "address[]" },
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "deadline", "type": "uint256" }
-      ],
-      "name": "swapExactTokensForETHSupportingFeeOnTransferTokens",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
-        { "internalType": "uint256", "name": "amountOutMin", "type": "uint256" },
-        { "internalType": "address[]", "name": "path", "type": "address[]" },
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "deadline", "type": "uint256" }
-      ],
-      "name": "swapExactTokensForTokens",
-      "outputs": [{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    }
-  ]
+  }
 };
