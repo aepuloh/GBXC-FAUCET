@@ -3,221 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KenariCoin (KN)</title>
+  <title>KenariCoin (KN) - Connect</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Ethers.js -->
   <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-yellow-100 to-white flex flex-col items-center justify-center p-6">
+<body class="h-screen flex items-center justify-center bg-gradient-to-b from-yellow-100 to-white">
 
-  <!-- Logo & Header -->
-  <div class="flex flex-col items-center mb-6 animate-fadeIn">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" class="w-40 mb-4">
-      <circle cx="30" cy="30" r="25" fill="#FFD700" stroke="black" stroke-width="3"/>
-      <text x="30" y="35" text-anchor="middle" font-size="18" font-family="Arial Black" fill="black">KN</text>
-      <text x="70" y="38" font-size="20" font-family="Arial Black" fill="#333">KenariCoin</text>
-    </svg>
-    <h1 class="text-4xl font-bold text-gray-800">KenariCoin (KN)</h1>
-    <p class="text-gray-600 mt-2">Desentralisasi • Transparansi • Masa depan aset digital</p>
-  </div>
-
-  <!-- Wallet + Action Buttons -->
-  <div class="flex flex-col gap-4 items-center">
-    <button id="connectBtn" class="rounded-2xl px-6 py-3 text-lg bg-yellow-400 hover:bg-yellow-500 text-white font-bold shadow-lg transition">
-      Connect Wallet
-    </button>
-    <button id="balanceBtn" class="rounded-2xl px-6 py-3 text-lg bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg transition hidden">
-      Check Balance
-    </button>
-    <button id="buyBtn" class="rounded-2xl px-6 py-3 text-lg bg-blue-500 hover:bg-blue-600 text-white font-bold shadow-lg transition hidden">
-      Buy KN on PancakeSwap
-    </button>
-    <p id="balanceText" class="text-gray-700 font-medium"></p>
-  </div>
-
-  <!-- Footer -->
-  <footer class="absolute bottom-4 text-gray-500 text-sm">
-    © <span id="year"></span> KenariCoin. All rights reserved.
-  </footer>
-
-  <!-- Toast Container -->
-  <div id="toast-container" class="fixed top-4 right-4 space-y-2 z-50"></div>
+  <button id="connectBtn" class="rounded-2xl px-8 py-4 text-xl bg-yellow-400 hover:bg-yellow-500 text-white font-bold shadow-lg transition">
+    Connect Wallet
+  </button>
 
   <script>
-    // Tahun otomatis
-    document.getElementById("year").innerText = new Date().getFullYear();
-
-    // Kontrak token KenariCoin (BSC Mainnet)
-    const tokenAddress = "0x0B70E29a77775E9aa2F7A7c66C371B411d4D685c";
-    const tokenABI = [
-      "function balanceOf(address owner) view returns (uint256)",
-      "function decimals() view returns (uint8)",
-      "function symbol() view returns (string)"
-    ];
-
-    // BSC Mainnet config
-    const BSC_PARAMS = {
-      chainId: "0x38", // 56 desimal
-      chainName: "Binance Smart Chain",
-      nativeCurrency: {
-        name: "Binance Coin",
-        symbol: "BNB",
-        decimals: 18
-      },
-      rpcUrls: ["https://bsc-dataseed.binance.org/"],
-      blockExplorerUrls: ["https://bscscan.com/"]
-    };
-
+    const connectBtn = document.getElementById("connectBtn");
     let provider, signer, account;
 
-    const connectBtn = document.getElementById("connectBtn");
-    const balanceBtn = document.getElementById("balanceBtn");
-    const buyBtn = document.getElementById("buyBtn");
-    const balanceText = document.getElementById("balanceText");
-
-    // === TOAST NOTIFICATION ===
-    function showToast(message, type = "info") {
-      const container = document.getElementById("toast-container");
-      const toast = document.createElement("div");
-
-      let bg = "bg-gray-800";
-      if (type === "success") bg = "bg-green-600";
-      if (type === "error") bg = "bg-red-600";
-      if (type === "warning") bg = "bg-yellow-500";
-
-      toast.className = `${bg} text-white px-4 py-2 rounded-lg shadow-md animate-fadeIn`;
-      toast.innerText = message;
-
-      container.appendChild(toast);
-
-      // Hapus otomatis setelah 3 detik
-      setTimeout(() => {
-        toast.classList.add("opacity-0", "transition", "duration-500");
-        setTimeout(() => toast.remove(), 500);
-      }, 3000);
-    }
-
-    // Fungsi ambil saldo
-    async function updateBalance() {
-      if (!provider || !account) return;
-      try {
-        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-        const balance = await contract.balanceOf(account);
-        const decimals = await contract.decimals();
-        const symbol = await contract.symbol();
-        const formatted = ethers.utils.formatUnits(balance, decimals);
-        balanceText.innerText = `Your Balance: ${formatted} ${symbol}`;
-      } catch (err) {
-        console.error("Error reading balance:", err);
-        showToast("Failed to fetch balance", "error");
-      }
-    }
-
-    // Connect Wallet
     connectBtn.addEventListener("click", async () => {
       if (window.ethereum) {
         try {
-          // Cek chain dulu
-          const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
-          if (currentChainId !== BSC_PARAMS.chainId) {
-            try {
-              // switch chain
-              await window.ethereum.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: BSC_PARAMS.chainId }]
-              });
-              showToast("Switched to BSC Mainnet ✅", "success");
-            } catch (switchError) {
-              // kalau chain belum ditambahkan
-              if (switchError.code === 4902) {
-                await window.ethereum.request({
-                  method: "wallet_addEthereumChain",
-                  params: [BSC_PARAMS]
-                });
-                showToast("BSC Mainnet added & selected ✅", "success");
-              } else {
-                throw switchError;
-              }
-            }
-          }
-
-          // Request account
           const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
           account = accounts[0];
-
           provider = new ethers.providers.Web3Provider(window.ethereum);
           signer = provider.getSigner();
 
-          connectBtn.innerText = "Connected: " + account.slice(0,6) + "..." + account.slice(-4);
-
-          balanceBtn.classList.remove("hidden");
-          buyBtn.classList.remove("hidden");
-
-          showToast("Wallet connected ✅", "success");
-
-          // langsung update saldo
-          await updateBalance();
-
+          // ✅ redirect ke dashboard
+          localStorage.setItem("connectedAccount", account); // simpan biar bisa dipakai di dashboard
+          window.location.href = "dashboard.html";
         } catch (err) {
-          console.error("Wallet connect error:", err);
-          showToast("Failed to connect wallet", "error");
+          alert("Wallet connect error: " + err.message);
         }
       } else {
-        showToast("Please install a Web3 wallet (MetaMask, Trust Wallet, dll)", "warning");
+        alert("Please install MetaMask or WalletConnect supported wallet!");
       }
     });
-
-    // Manual cek saldo
-    balanceBtn.addEventListener("click", updateBalance);
-
-    // Buy Token on PancakeSwap
-    buyBtn.addEventListener("click", () => {
-      window.open(`https://pancakeswap.finance/swap?outputCurrency=${tokenAddress}`, "_blank");
-    });
-
-    // 🔔 Deteksi kalau user ganti jaringan
-    if (window.ethereum) {
-      window.ethereum.on("chainChanged", async (chainId) => {
-        if (chainId !== BSC_PARAMS.chainId) {
-          showToast("⚠️ Please switch to Binance Smart Chain (BSC)", "warning");
-          balanceText.innerText = "";
-        } else {
-          showToast("✅ Connected to BSC Mainnet", "success");
-          if (account) {
-            await updateBalance();
-          }
-        }
-      });
-
-      // 🔔 Deteksi kalau user ganti akun
-      window.ethereum.on("accountsChanged", async (accounts) => {
-        if (accounts.length === 0) {
-          account = null;
-          balanceText.innerText = "";
-          connectBtn.innerText = "Connect Wallet";
-          balanceBtn.classList.add("hidden");
-          buyBtn.classList.add("hidden");
-          showToast("Wallet disconnected", "warning");
-        } else {
-          account = accounts[0];
-          connectBtn.innerText = "Connected: " + account.slice(0,6) + "..." + account.slice(-4);
-          showToast("Account changed", "info");
-          if (provider) {
-            await updateBalance();
-          }
-        }
-      });
-    }
   </script>
-
-  <style>
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fadeIn {
-      animation: fadeIn 0.3s ease-out;
-    }
-  </style>
 </body>
 </html>
