@@ -140,7 +140,8 @@
   </div>
 
   <!-- Scripts -->
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+<script>
   const mobileMenu = document.getElementById("mobileMenu");
   const menuBtn = document.getElementById("menuBtn");
 
@@ -172,13 +173,24 @@
   // ==============================
   // Wallet Connection Functions
   // ==============================
+  let provider;
+  let signer;
+  let userAddress;
+
   async function connectMetaMask() {
     if (window.ethereum) {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const account = accounts[0];
-        alert("MetaMask connected: " + account);
-        document.getElementById("connectBtn").innerText = account.substring(0, 6) + "..." + account.slice(-4);
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        alert("MetaMask connected: " + userAddress);
+        document.getElementById("connectBtn").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+
+        // Tampilkan saldo
+        updateBalances();
+
         closeModal();
       } catch (error) {
         console.error(error);
@@ -192,14 +204,21 @@
   async function connectOKX() {
     if (window.okxwallet && window.okxwallet.request) {
       try {
-        const accounts = await window.okxwallet.request({ method: 'eth_requestAccounts' });
-        const account = accounts[0];
-        alert("OKX connected: " + account);
-        document.getElementById("connectBtn").innerText = account.substring(0, 6) + "..." + account.slice(-4);
+        provider = new ethers.providers.Web3Provider(window.okxwallet);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        alert("OKX Wallet connected: " + userAddress);
+        document.getElementById("connectBtn").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+
+        // Tampilkan saldo
+        updateBalances();
+
         closeModal();
       } catch (error) {
         console.error(error);
-        alert("OKX connection failed!");
+        alert("OKX Wallet connection failed!");
       }
     } else {
       alert("OKX Wallet belum terpasang. Silakan install di browser Anda!");
@@ -214,6 +233,35 @@
     } else {
       alert(wallet + " belum didukung penuh.");
       closeModal();
+    }
+  }
+
+  // ==============================
+  // Balances
+  // ==============================
+  async function updateBalances() {
+    if (!provider || !userAddress) return;
+
+    try {
+      // Ambil saldo BNB (native token di BSC)
+      const balance = await provider.getBalance(userAddress);
+      const bnb = ethers.utils.formatEther(balance);
+      document.getElementById("bnbBalance").innerText = parseFloat(bnb).toFixed(4) + " BNB";
+
+      // Ambil saldo token KN (ganti alamat contract sesuai token Anda)
+      const tokenAddress = "0x1390f63AF92448c46368443496a2bfc1469558de"; // <--- GANTI dengan alamat smart contract KN
+      const tokenABI = [
+        "function balanceOf(address owner) view returns (uint256)",
+        "function decimals() view returns (uint8)"
+      ];
+      const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
+      const decimals = await tokenContract.decimals();
+      const rawBalance = await tokenContract.balanceOf(userAddress);
+      const knc = ethers.utils.formatUnits(rawBalance, decimals);
+      document.getElementById("tokenBalance").innerText = parseFloat(knc).toFixed(2) + " KNC";
+
+    } catch (err) {
+      console.error("Error fetching balances:", err);
     }
   }
 
