@@ -3,84 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KenariCoin - Connect Wallet</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3-provider/dist/umd/index.min.js"></script>
-  <script src="https://unpkg.com/web3modal"></script>
+  <title>KenariCoin</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
-  <div class="text-center">
-    <!-- Logo KN -->
-    <svg class="mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 200 200">
-      <circle cx="100" cy="100" r="95" fill="url(#grad)" stroke="#FFD700" stroke-width="6"/>
-      <text x="50%" y="55%" text-anchor="middle" font-size="70" font-family="Arial Black, sans-serif" fill="#FFD700" dy=".3em">KN</text>
-      <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#0f2027;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#2c5364;stop-opacity:1" />
-        </linearGradient>
-      </defs>
-    </svg>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
 
-    <h1 class="text-3xl font-bold mb-2">Selamat Datang di KenariCoin</h1>
-    <p class="mb-6 text-gray-300">Silakan hubungkan wallet Anda untuk melanjutkan</p>
+  <!-- Logo -->
+  <div class="flex flex-col items-center mb-8">
+    <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 w-20 h-20 rounded-full flex items-center justify-center shadow-lg">
+      <span class="text-3xl font-bold text-gray-900">KN</span>
+    </div>
+    <h1 class="mt-4 text-3xl font-bold">KenariCoin</h1>
+    <p class="text-gray-400">The Future of Community Token</p>
+  </div>
 
-    <button id="connectBtn" class="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-xl hover:bg-yellow-400">
-      🔗 Connect Wallet
-    </button>
+  <!-- Card Connect -->
+  <div class="bg-gray-800 p-6 rounded-2xl shadow-lg w-80 text-center">
+    <h2 class="text-xl font-semibold mb-4">Connect Your Wallet</h2>
 
-    <p id="status" class="mt-4 text-green-400 hidden">✅ Wallet berhasil terhubung...</p>
+    <div id="wallet-options" class="space-y-3">
+      <button id="btn-metamask" class="w-full py-3 rounded-xl bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold">
+        MetaMask
+      </button>
+      <button id="btn-walletconnect" class="w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-600 font-bold">
+        WalletConnect
+      </button>
+      <button id="btn-trustwallet" class="w-full py-3 rounded-xl bg-green-500 hover:bg-green-600 font-bold">
+        Trust Wallet
+      </button>
+    </div>
+
+    <p id="status" class="text-gray-400 mt-4 text-sm">Not connected</p>
   </div>
 
   <script>
-    const connectBtn = document.getElementById("connectBtn");
-    const statusEl = document.getElementById("status");
+    let provider, signer, account;
 
-    async function connectWallet() {
-      try {
-        const web3Modal = new window.Web3Modal.default({
-          cacheProvider: false,
-          providerOptions: {
-            walletconnect: {
-              package: window.WalletConnectProvider.default,
-              options: {
-                rpc: { 56: "https://bsc-dataseed.binance.org/" },
-                chainId: 56
-              }
-            }
-          }
-        });
-
-        const instance = await web3Modal.connect();
-        const provider = new ethers.providers.Web3Provider(instance);
-        const signer = provider.getSigner();
-
-        const network = await provider.getNetwork();
-        if (network.chainId !== 56) {
-          alert("⚠️ Harap switch ke Binance Smart Chain Mainnet!");
-          return;
+    async function connectMetaMask() {
+      if (typeof window.ethereum !== "undefined" && window.ethereum.isMetaMask) {
+        try {
+          await window.ethereum.request({ method: "eth_requestAccounts" });
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+          account = await signer.getAddress();
+          document.getElementById("status").innerText = "Connected: " + account;
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1200);
+        } catch (err) {
+          console.error(err);
+          document.getElementById("status").innerText = "MetaMask connection failed";
         }
-
-        const account = await signer.getAddress();
-
-        // ✅ Simpan wallet ke localStorage
-        localStorage.setItem("kenari_wallet", account);
-
-        statusEl.classList.remove("hidden");
-        statusEl.innerText = `✅ Connected: ${account.slice(0,6)}...${account.slice(-4)}`;
-
-        // Redirect ke dashboard
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1200);
-
-      } catch (err) {
-        alert("Wallet connect error: " + err.message);
+      } else {
+        alert("MetaMask not installed. Please install MetaMask.");
       }
     }
 
-    connectBtn.addEventListener("click", connectWallet);
+    async function connectWalletConnect() {
+      try {
+        const wcProvider = new WalletConnectProvider.default({
+          rpc: { 56: "https://bsc-dataseed.binance.org/" }
+        });
+        await wcProvider.enable();
+        provider = new ethers.providers.Web3Provider(wcProvider);
+        signer = provider.getSigner();
+        account = await signer.getAddress();
+        document.getElementById("status").innerText = "Connected: " + account;
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1200);
+      } catch (err) {
+        console.error(err);
+        document.getElementById("status").innerText = "WalletConnect failed";
+      }
+    }
+
+    async function connectTrustWallet() {
+      if (window.ethereum && window.ethereum.isTrust) {
+        try {
+          await window.ethereum.request({ method: "eth_requestAccounts" });
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+          account = await signer.getAddress();
+          document.getElementById("status").innerText = "Connected: " + account;
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1200);
+        } catch (err) {
+          console.error(err);
+          document.getElementById("status").innerText = "Trust Wallet failed";
+        }
+      } else {
+        alert("Trust Wallet not detected. Please open in Trust Wallet browser.");
+      }
+    }
+
+    // Tambahan: deteksi otomatis wallet
+    window.addEventListener("DOMContentLoaded", () => {
+      if (typeof window.ethereum !== "undefined") {
+        if (window.ethereum.isMetaMask) {
+          document.getElementById("btn-metamask").innerText = "MetaMask (Recommended)";
+        } else if (window.ethereum.isTrust) {
+          document.getElementById("btn-trustwallet").innerText = "Trust Wallet (Recommended)";
+        }
+      } else {
+        document.getElementById("btn-walletconnect").innerText = "WalletConnect (Best option)";
+      }
+    });
+
+    document.getElementById("btn-metamask").addEventListener("click", connectMetaMask);
+    document.getElementById("btn-walletconnect").addEventListener("click", connectWalletConnect);
+    document.getElementById("btn-trustwallet").addEventListener("click", connectTrustWallet);
   </script>
 </body>
 </html>
