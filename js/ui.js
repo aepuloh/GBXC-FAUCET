@@ -31,5 +31,5 @@ function showPage(pageId) {
 
 // Default tampil halaman contact sampai wallet connect
 if (document.querySelector("main")) {
-  showPage("contact");
+  showPage("home");
 }
