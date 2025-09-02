@@ -28,9 +28,13 @@ async function selectWallet(type) {
     currentAccount = accounts[0];
     web3 = new Web3(window.ethereum);
     await switchNetwork();
+
     updateUIConnected();
     closeModal();
     showPage("home");
+
+    // 🚀 Ambil saldo setelah connect
+    loadBalances();
   } catch (error) {
     console.error("❌ Wallet connection failed:", error);
   }
@@ -41,6 +45,10 @@ function disconnectWallet() {
   web3 = null;
   updateUIDisconnected();
   showPage("contact");
+
+  // Reset saldo di UI
+  document.getElementById("bnbBalance").innerText = "0 BNB";
+  document.getElementById("tokenBalance").innerText = "0 " + CONFIG.token.symbol;
 }
 
 // UI update
@@ -60,13 +68,43 @@ function updateUIDisconnected() {
   connectBtn.classList.add("bg-yellow-500", "hover:bg-yellow-600");
 }
 
-// Auto handle disconnect dari wallet
+// 🚀 Fungsi ambil saldo BNB & Token
+async function loadBalances() {
+  if (!web3 || !currentAccount) return;
+
+  try {
+    // Ambil saldo BNB
+    const balanceBNB = await web3.eth.getBalance(currentAccount);
+    const formattedBNB = web3.utils.fromWei(balanceBNB, "ether");
+    document.getElementById("bnbBalance").innerText = `${parseFloat(formattedBNB).toFixed(4)} BNB`;
+
+    // Ambil saldo token KNC (ERC20 standard)
+    const tokenAbi = [
+      {
+        "constant": true,
+        "inputs": [{ "name": "owner", "type": "address" }],
+        "name": "balanceOf",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+      }
+    ];
+    const token = new web3.eth.Contract(tokenAbi, CONFIG.token.contractAddress);
+    const balanceKNC = await token.methods.balanceOf(currentAccount).call();
+    const formattedKNC = balanceKNC / 10 ** CONFIG.token.decimals;
+    document.getElementById("tokenBalance").innerText = `${formattedKNC.toFixed(2)} ${CONFIG.token.symbol}`;
+  } catch (err) {
+    console.error("❌ Gagal ambil saldo:", err);
+  }
+}
+
+// Auto handle disconnect / ganti akun
 if (window.ethereum) {
   window.ethereum.on("accountsChanged", (accounts) => {
     if (accounts.length === 0) {
       disconnectWallet();
     } else {
       currentAccount = accounts[0];
+      loadBalances();
     }
   });
 }
