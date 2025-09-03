@@ -78,15 +78,17 @@
       </div>
     </section>
 
-    <!-- Buy -->
     <section id="buy" class="hidden max-w-md mx-auto text-center">
-      <h2 class="text-2xl font-bold mb-4">Buy KenariCoin</h2>
-      <div class="bg-white rounded-xl shadow p-6">
-        <label class="block text-left font-semibold mb-2">Amount BNB</label>
-        <input type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
-        <button class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Buy KNC</button>
-      </div>
-    </section>
+  <h2 class="text-2xl font-bold mb-4">Buy KenariCoin</h2>
+  <div class="bg-white rounded-xl shadow p-6">
+    <label class="block text-left font-semibold mb-2">Amount BNB</label>
+    <input id="buyAmount" type="number" placeholder="0.0" class="w-full border rounded-lg p-2 mb-4" />
+    <button onclick="buyToken()" 
+            class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+      Buy KN
+    </button>
+  </div>
+</section>
 
     <!-- Swap -->
     <section id="swap" class="hidden max-w-md mx-auto text-center">
