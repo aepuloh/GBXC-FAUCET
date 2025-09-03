@@ -29,6 +29,7 @@
           <a href="#" onclick="showPage('swap')" class="hover:text-yellow-500">Swap</a>
           <a href="#" onclick="showPage('contact')" class="hover:text-yellow-500">Contact</a>
           <a href="#" onclick="showPage('about')" class="hover:text-yellow-500">About</a>
+          <a href="#" onclick="showPage('FAQ')" class="hover:text-yellow-500">FAQ</a>
         </div>
         <!-- Connect Button -->
         <button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
@@ -53,6 +54,7 @@
       <a href="#" onclick="navigate('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
       <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
       <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
+      <a href="#" onclick="navigate('FAQ')" class="block py-2 hover:text-yellow-500">FAQ</a>
     </div>
   </nav>
 
@@ -240,7 +242,27 @@ function copyContract() {
     </div>
   </div>
 </section>
-
+    <section id="faq" class="hidden text-center">
+  <h2 class="text-2xl font-bold mb-4">FAQ (Pertanyaan Umum)</h2>
+  <div class="max-w-2xl mx-auto text-left space-y-4 text-gray-700 leading-relaxed">
+    <div class="bg-white shadow rounded-xl p-4">
+      <h3 class="font-semibold">❓ Apa itu KenariCoin?</h3>
+      <p>KenariCoin (KN) adalah token BEP-20 berbasis Binance Smart Chain yang dirancang untuk menghadirkan ekosistem keuangan terdesentralisasi dengan fokus pada kecepatan, transparansi, dan utilitas nyata.</p>
+    </div>
+    <div class="bg-white shadow rounded-xl p-4">
+      <h3 class="font-semibold">❓ Bagaimana cara membeli KenariCoin?</h3>
+      <p>Kamu bisa membeli KenariCoin melalui <a href="https://pancakeswap.finance/swap?outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-600 font-semibold hover:underline">PancakeSwap</a> dengan menukar BNB ke KNC.</p>
+    </div>
+    <div class="bg-white shadow rounded-xl p-4">
+      <h3 class="font-semibold">❓ Apakah ada fitur staking?</h3>
+      <p>Ya, fitur staking sedang dalam tahap pengembangan dan akan dirilis sesuai roadmap pada Q4 2025.</p>
+    </div>
+    <div class="bg-white shadow rounded-xl p-4">
+      <h3 class="font-semibold">❓ Di mana saya bisa melihat kontrak token?</h3>
+      <p>Kontrak KenariCoin bisa dilihat langsung di <a href="https://bscscan.com/token/0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-600 font-semibold hover:underline">BscScan</a>.</p>
+    </div>
+  </div>
+</section>
   <!-- Wallet Modal -->
   <div id="walletModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-2xl p-6 w-80 shadow-lg">
@@ -376,5 +398,16 @@ function copyContract() {
 <script src="config.js"></script>
 <script src="ui.js"></script>
 <script src="wallet.js"></script>
+    <footer class="bg-gray-900 text-white py-6 mt-10">
+  <div class="max-w-4xl mx-auto text-center space-y-2">
+    <p class="text-sm">📜 Contract: 
+      <a href="https://bscscan.com/token/0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-400 hover:underline">
+        0x1390f63AF92448c46368443496a2bfc1469558de
+      </a>
+    </p>
+    <p class="text-sm">🌐 Website resmi: <a href="https://kenaricoin.netlify.app" class="text-yellow-400 hover:underline">kenaricoin.com</a></p>
+    <p class="text-xs text-gray-400">© 2025 KenariCoin. All Rights Reserved.</p>
+  </div>
+</footer>
 </body>
 </html>
