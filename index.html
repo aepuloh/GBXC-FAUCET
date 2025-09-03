@@ -543,51 +543,63 @@
     }
 
     // ===============================
-    // Kalkulasi (Swap & Buy)
-    // ===============================
-    async function updateSwapOutput() {
-      const fromToken = document.getElementById("swapFromToken").value; // BNB/USDT/USDC
-      const amountIn = document.getElementById("swapFromAmount").value;
+// Kalkulasi (Swap & Buy) FIX decimals
+// ===============================
+async function updateSwapOutput() {
+  const fromToken = document.getElementById("swapFromToken").value; // BNB/USDT/USDC
+  const amountIn = document.getElementById("swapFromAmount").value;
 
-      if (!amountIn || isNaN(amountIn)) {
-        document.getElementById("swapToAmount").value = "0.0";
-        return;
-      }
-      try {
-        const router = getRouter(new ethers.providers.Web3Provider(window.ethereum || window).getSigner());
-        const decIn = fromToken === "BNB" ? 18 : 18; // BSC USDT/USDC are 18
-        const amountInWei = toWei(amountIn, decIn);
-        const path = getPath(fromToken, KN);
-        const amounts = await router.getAmountsOut(amountInWei, path);
-        const out = fromWei(amounts[amounts.length - 1], 6);
-        document.getElementById("swapToAmount").value = (+out).toFixed(6);
-      } catch (err) {
-        console.error("Swap calc error:", err);
-        document.getElementById("swapToAmount").value = "Error";
-      }
-    }
+  if (!amountIn || isNaN(amountIn)) {
+    document.getElementById("swapToAmount").value = "0.0";
+    return;
+  }
+  try {
+    const web3prov = new ethers.providers.Web3Provider(window.ethereum || window);
+    const router = getRouter(web3prov);
 
-    async function updateBuyOutput() {
-      const fromToken = document.getElementById("buyFromToken").value;
-      const amountIn = document.getElementById("buyAmount").value;
+    // input decimals
+    const decIn = TOKEN_DECIMALS[fromToken] || 18;
+    const amountInWei = toWei(amountIn, decIn);
 
-      if (!amountIn || isNaN(amountIn)) {
-        document.getElementById("buyReceive").value = "0.0";
-        return;
-      }
-      try {
-        const router = getRouter(new ethers.providers.Web3Provider(window.ethereum || window).getSigner());
-        const decIn = fromToken === "BNB" ? 18 : 18;
-        const amountInWei = toWei(amountIn, decIn);
-        const path = getPath(fromToken, KN);
-        const amounts = await router.getAmountsOut(amountInWei, path);
-        const out = fromWei(amounts[amounts.length - 1], 6);
-        document.getElementById("buyReceive").value = (+out).toFixed(6);
-      } catch (err) {
-        console.error("Buy calc error:", err);
-        document.getElementById("buyReceive").value = "Error";
-      }
-    }
+    // path selalu ke KN
+    const path = getPath(fromToken, KN);
+    const amounts = await router.getAmountsOut(amountInWei, path);
+
+    // output decimals = KN (6)
+    const out = fromWei(amounts[amounts.length - 1], 6);
+    document.getElementById("swapToAmount").value = (+out).toFixed(6);
+  } catch (err) {
+    console.error("Swap calc error:", err);
+    document.getElementById("swapToAmount").value = "Error";
+  }
+}
+
+async function updateBuyOutput() {
+  const fromToken = document.getElementById("buyFromToken").value;
+  const amountIn = document.getElementById("buyAmount").value;
+
+  if (!amountIn || isNaN(amountIn)) {
+    document.getElementById("buyReceive").value = "0.0";
+    return;
+  }
+  try {
+    const web3prov = new ethers.providers.Web3Provider(window.ethereum || window);
+    const router = getRouter(web3prov);
+
+    const decIn = TOKEN_DECIMALS[fromToken] || 18;
+    const amountInWei = toWei(amountIn, decIn);
+
+    const path = getPath(fromToken, KN);
+    const amounts = await router.getAmountsOut(amountInWei, path);
+
+    // output decimals = KN (6)
+    const out = fromWei(amounts[amounts.length - 1], 6);
+    document.getElementById("buyReceive").value = (+out).toFixed(6);
+  } catch (err) {
+    console.error("Buy calc error:", err);
+    document.getElementById("buyReceive").value = "Error";
+  }
+}
 
     // ===============================
     // Eksekusi Swap / Buy
