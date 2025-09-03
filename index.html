@@ -416,6 +416,14 @@
     if (fromSymbol === "USDC") return [USDC, KN];
     return [WBNB, KN];
   }
+  
+  function getTokenAddress(symbol) {
+  if (symbol === "BNB") return WBNB;
+  if (symbol === "USDT") return USDT;
+  if (symbol === "USDC") return USDC;
+  if (symbol === "KN") return KN;
+  return WBNB;
+}
 
   function sanitizeNumberInput(v){
     if (v === null || v === undefined) return "";
@@ -570,7 +578,7 @@
       const decIn = TOKEN_DECIMALS[fromToken] || 18;
       const inWei = toWei(amountIn, decIn);
       if (inWei.isZero()) { outEl.value = "0.0"; return; }
-      const path = getPath(fromToken);
+      const path = [ getTokenAddress(fromToken), KN ];
 
       // safe call
       const amounts = await router.getAmountsOut(inWei, path);
@@ -599,7 +607,7 @@
       const decIn = TOKEN_DECIMALS[fromToken] || 18;
       const inWei = toWei(amountIn, decIn);
       if (inWei.isZero()) { outEl.value = "0.0"; return; }
-      const path = getPath(fromToken);
+      const path = [ getTokenAddress(fromToken), KN ];
       const amounts = await router.getAmountsOut(inWei, path);
       if (!amounts || amounts.length === 0) { outEl.value = "No pool"; return; }
       const outWei = amounts[amounts.length - 1];
@@ -630,7 +638,7 @@
       const decIn = TOKEN_DECIMALS[fromToken] || 18;
       const inWei = toWei(amountIn, decIn);
       const readRouter = getRouter(getReadProvider());
-      const path = getPath(fromToken);
+      const path = [ getTokenAddress(fromToken), KN ];
       const amounts = await readRouter.getAmountsOut(inWei, path);
       if (!amounts || amounts.length===0) return alert("Pair belum ada likuiditas (No pool).");
 
