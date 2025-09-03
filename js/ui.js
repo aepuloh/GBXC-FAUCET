@@ -39,7 +39,58 @@ function showPage(pageId) {
 if (document.querySelector("main")) {
   showPage("home");
 }
+// Provider fallback (pakai RPC publik BSC)
+let provider;
+if (window.ethereum) {
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+} else {
+  // fallback ke RPC publik
+  provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+}
 
+// Pancake Router v2
+const routerAddress = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
+const routerABI = [
+  "function getAmountsOut(uint amountIn, address[] memory path) view returns (uint[] memory amounts)"
+];
+const router = new ethers.Contract(routerAddress, routerABI, provider);
+
+// Token address (BNB harus pakai WBNB)
+const TOKENS = {
+  BNB: "0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // WBNB
+  USDT: "0x55d398326f99059fF775485246999027B3197955",
+  USDC: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+  KNC: CONFIG.token.contractAddress
+};
+
+// Update kalkulasi swap
+async function updateSwapOutput() {
+  const fromToken = document.getElementById("swapFromToken").value;
+  const toToken = document.getElementById("swapToToken").value;
+  const amountIn = document.getElementById("swapFromAmount").value;
+
+  console.log("updateSwapOutput:", fromToken, "->", toToken, "amount:", amountIn);
+
+  if (!amountIn || isNaN(amountIn) || parseFloat(amountIn) <= 0) {
+    document.getElementById("swapToAmount").value = "";
+    return;
+  }
+
+  try {
+    const amountInWei = ethers.utils.parseUnits(amountIn, 18);
+
+    const path = [TOKENS[fromToken], TOKENS[toToken]];
+    const amounts = await router.getAmountsOut(amountInWei, path);
+
+    const amountOut = ethers.utils.formatUnits(amounts[1], 18);
+    document.getElementById("swapToAmount").value = parseFloat(amountOut).toFixed(6);
+
+    console.log("Calculated output:", amountOut);
+  } catch (err) {
+    console.error("Error calculating swap:", err);
+    document.getElementById("swapToAmount").value = "Error";
+  }
+}
 // ===============================
 // Tab Navigation (Swap / Buy / Liquidity)
 // ===============================
