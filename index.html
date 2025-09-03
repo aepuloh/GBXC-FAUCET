@@ -23,38 +23,40 @@
         </div>
         <!-- Desktop Menu -->
         <div class="hidden md:flex space-x-6">
-          <a href="#" onclick="showPage('home')" class="hover:text-yellow-500">Home</a>
-          <a href="#" onclick="showPage('wallet')" class="hover:text-yellow-500">Wallet</a>
-          <a href="#" onclick="showPage('buy')" class="hover:text-yellow-500">Buy</a>
-          <a href="#" onclick="showPage('swap')" class="hover:text-yellow-500">Swap</a>
-          <a href="#" onclick="showPage('contact')" class="hover:text-yellow-500">Contact</a>
-          <a href="#" onclick="showPage('about')" class="hover:text-yellow-500">About</a>
-        </div>
-        <!-- Connect Button -->
-        <button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
-          Connect Wallet
-        </button>
-        <!-- Mobile Hamburger -->
-        <div class="md:hidden">
-          <button id="menuBtn" class="focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
-      <a href="#" onclick="navigate('home')" class="block py-2 hover:text-yellow-500">Home</a>
-      <a href="#" onclick="navigate('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
-      <a href="#" onclick="navigate('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
-      <a href="#" onclick="navigate('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
-      <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
-      <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
-    </div>
-  </nav>
+  <a href="#" onclick="showPage('home')" class="hover:text-yellow-500">Home</a>
+  <a href="#" onclick="showPage('wallet')" class="hover:text-yellow-500">Wallet</a>
+  <a href="#" onclick="showPage('buy')" class="hover:text-yellow-500">Buy</a>
+  <a href="#" onclick="showPage('swap')" class="hover:text-yellow-500">Swap</a>
+  <a href="#" onclick="showPage('contact')" class="hover:text-yellow-500">Contact</a>
+  <a href="#" onclick="showPage('about')" class="hover:text-yellow-500">About</a>
+  <a href="#" onclick="showPage('faq')" class="hover:text-yellow-500">FAQ</a>
+</div>
+<!-- Connect Button -->
+<button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
+  Connect Wallet
+</button>
+<!-- Mobile Hamburger -->
+<div class="md:hidden">
+  <button id="menuBtn" class="focus:outline-none">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+</div>
+</div>
+</div>
+<!-- Mobile Menu -->
+<div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
+  <a href="#" onclick="navigate('home')" class="block py-2 hover:text-yellow-500">Home</a>
+  <a href="#" onclick="navigate('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
+  <a href="#" onclick="navigate('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
+  <a href="#" onclick="navigate('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
+  <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
+  <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
+  <a href="#" onclick="navigate('faq')" class="block py-2 hover:text-yellow-500">FAQ</a>
+</div>
+</nav>
 
   <!-- Pages -->
   <main class="flex-grow px-4 pt-24 pb-10">
