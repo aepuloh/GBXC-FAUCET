@@ -82,6 +82,28 @@
     Langkah-langkah ini merupakan bagian dari komitmen kami untuk membuktikan bahwa 
     KenariCoin adalah proyek yang <span class="font-semibold">serius dan berkelanjutan</span>.  
   </p>
+      <!-- Contract Address Box -->
+<div class="mt-6 max-w-xl mx-auto bg-white shadow rounded-xl p-4 text-gray-700">
+  <h3 class="font-bold mb-2">📜 Contract Address</h3>
+  <div class="flex items-center justify-between">
+    <span id="contractAddr" class="text-sm break-all">
+      0x1390f63AF92448c46368443496a2bfc1469558de
+    </span>
+    <button onclick="copyContract()" 
+            class="ml-2 px-3 py-1 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600">
+      Copy
+    </button>
+  </div>
+</div>
+
+<script>
+function copyContract() {
+  const addr = document.getElementById("contractAddr").innerText;
+  navigator.clipboard.writeText(addr);
+  alert("✅ Contract Address disalin: " + addr);
+}
+</script>
+      
 
   <!-- Roadmap -->
   <div class="mt-10 max-w-3xl mx-auto text-left bg-white shadow rounded-xl p-6">
@@ -205,6 +227,16 @@
         <li>Mengembangkan fitur staking & program loyalitas.</li>
         <li>Mendukung adopsi blockchain dengan cara yang mudah dipahami pengguna baru.</li>
       </ul>
+      <!-- Tokenomics -->
+<div class="bg-white shadow rounded-xl p-6 mt-8 text-left">
+  <h3 class="text-xl font-bold mb-4">📊 Tokenomics</h3>
+  <ul class="list-disc list-inside space-y-2 text-gray-700">
+    <li><span class="font-semibold">Total Supply:</span> 1,000,000,000 KNC</li>
+    <li><span class="font-semibold">Liquidity Pool:</span> 50%</li>
+    <li><span class="font-semibold">Staking & Rewards:</span> 20%</li>
+    <li><span class="font-semibold">Community Airdrop:</span> 20%</li>
+    <li><span class="font-semibold">Development Team:</span> 10%</li>
+  </ul>
     </div>
   </div>
 </section>
