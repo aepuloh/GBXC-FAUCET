@@ -128,9 +128,28 @@ function copyContract() {
     </section>
 
     <section id="swapbuy" class="hidden">
-  <iframe
+  <h2 class="text-2xl font-bold mb-4 text-center">💱 Buy / Swap / Add Liquidity</h2>
+
+  <!-- Tabs -->
+  <div class="flex justify-center space-x-4 mb-6">
+    <button onclick="openPancake('buy')" 
+            class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold shadow hover:bg-yellow-600">
+      Buy
+    </button>
+    <button onclick="openPancake('swap')" 
+            class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold shadow hover:bg-yellow-600">
+      Swap
+    </button>
+    <button onclick="openPancake('liquidity')" 
+            class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold shadow hover:bg-yellow-600">
+      Add Liquidity
+    </button>
+  </div>
+
+  <!-- Iframe PancakeSwap -->
+  <iframe id="pancakeFrame"
     src="https://pancakeswap.finance/swap?chain=bsc&outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de"
-    class="w-full h-[calc(100vh-64px)] border-0"
+    class="w-full h-[calc(100vh-180px)] border-0 rounded-xl shadow"
     allowfullscreen
     sandbox="allow-forms allow-popups allow-scripts allow-same-origin">
   </iframe>
