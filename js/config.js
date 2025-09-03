@@ -13,8 +13,8 @@ const CONFIG = {
   },
   token: {
     name: "KenariCoin",
-    symbol: "KNC",
-    decimals: 18,
+    symbol: "KN",
+    decimals: 6,
     contractAddress: "0x1390f63AF92448c46368443496a2bfc1469558de",
     abi: [
       {
