@@ -144,17 +144,25 @@ function copyContract() {
 </section>
 
     <!-- Swap -->
-    <section id="swap" class="hidden max-w-md mx-auto text-center">
-  <h2 class="text-2xl font-bold mb-4">Swap</h2>
-  <div class="bg-white rounded-xl shadow p-6">
-    <p class="mb-4 text-gray-600">
-      Kamu bisa melakukan swap token melalui PancakeSwap.
+    <section id="swap" class="hidden max-w-5xl mx-auto text-center">
+  <h2 class="text-2xl font-bold mb-6">🔄 Swap KenariCoin</h2>
+
+  <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
+    <p class="mb-6 text-gray-600 text-lg leading-relaxed">
+      Lakukan swap BNB ⇆ KenariCoin (KNC) langsung di website ini melalui <b>PancakeSwap</b>.
+      Pastikan wallet kamu sudah terkoneksi.
     </p>
-    <a href="https://pancakeswap.finance/swap?outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de"
-       target="_blank"
-       class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 block text-center">
-      🔄 Swap via PancakeSwap
-    </a>
+
+    <!-- Wrapper agar iframe responsif -->
+    <div class="relative w-full" style="padding-top: 120%;">
+      <iframe
+        src="https://pancakeswap.finance/swap?chain=bsc&outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de"
+        class="absolute top-0 left-0 w-full h-full rounded-xl shadow-inner"
+        style="border:0; overflow:hidden;"
+        allowfullscreen
+        sandbox="allow-forms allow-popups allow-scripts allow-same-origin">
+      </iframe>
+    </div>
   </div>
 </section>
 
