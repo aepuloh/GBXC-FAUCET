@@ -160,8 +160,8 @@ function copyContract() {
         <label class="block mb-2 font-semibold">To</label>
         <div class="flex space-x-2">
           <select id="swapToToken" class="p-3 border rounded-xl">
-            <option value="KN">KN</option>
-          </select>
+  <option value="KNC">KNC</option>
+</select>
           <input type="text" id="swapToAmount" disabled value="0.0"
                  class="flex-grow p-3 border rounded-xl bg-gray-100">
         </div>
@@ -189,7 +189,7 @@ function copyContract() {
       </div>
 
       <div class="mb-4">
-        <label class="block mb-2 font-semibold">Receive (KN)</label>
+        <label class="block mb-2 font-semibold">Receive (KNC)</label>
         <input type="text" id="buyReceive" disabled value="0.0"
                class="w-full p-3 border rounded-xl bg-gray-100">
       </div>
@@ -221,9 +221,7 @@ function copyContract() {
                class="w-full p-3 border rounded-xl">
       </div>
 
-      <button onclick="addLiquidity()" class="w-full py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600">
-        Add Liquidity
-      </button>
+      <button onclick="doAddLiquidity()" class="w-full py-3 ...">Add Liquidity</button>
     </div>
   </div>
 </section>
