@@ -23,13 +23,12 @@
         </div>
         <!-- Desktop Menu -->
         <div class="hidden md:flex space-x-6">
-  <a href="#" onclick="showPage('home')" class="hover:text-yellow-500">Home</a>
-  <a href="#" onclick="showPage('wallet')" class="hover:text-yellow-500">Wallet</a>
-  <a href="#" onclick="showPage('buy')" class="hover:text-yellow-500">Buy</a>
-  <a href="#" onclick="showPage('swap')" class="hover:text-yellow-500">Swap</a>
-  <a href="#" onclick="showPage('contact')" class="hover:text-yellow-500">Contact</a>
-  <a href="#" onclick="showPage('about')" class="hover:text-yellow-500">About</a>
-  <a href="#" onclick="showPage('faq')" class="hover:text-yellow-500">FAQ</a>
+  <a href="#" onclick="navigate('home')" class="hover:text-yellow-500">Home</a>
+  <a href="#" onclick="navigate('wallet')" class="hover:text-yellow-500">Wallet</a>
+  <a href="#" onclick="navigate('swapbuy')" class="hover:text-yellow-500">Swap/Buy</a>
+  <a href="#" onclick="navigate('contact')" class="hover:text-yellow-500">Contact</a>
+  <a href="#" onclick="navigate('about')" class="hover:text-yellow-500">About</a>
+  <a href="#" onclick="navigate('faq')" class="hover:text-yellow-500">FAQ</a>
 </div>
 <!-- Connect Button -->
 <button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
@@ -50,8 +49,7 @@
 <div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
   <a href="#" onclick="navigate('home')" class="block py-2 hover:text-yellow-500">Home</a>
   <a href="#" onclick="navigate('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
-  <a href="#" onclick="navigate('buy')" class="block py-2 hover:text-yellow-500">Buy</a>
-  <a href="#" onclick="navigate('swap')" class="block py-2 hover:text-yellow-500">Swap</a>
+  <a href="#" onclick="navigate('swapbuy')" class="block py-2 hover:text-yellow-500">Swap/Buy</a>
   <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
   <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
   <a href="#" onclick="navigate('faq')" class="block py-2 hover:text-yellow-500">FAQ</a>
@@ -129,25 +127,10 @@ function copyContract() {
       </div>
     </section>
 
-    <section id="buy" class="hidden max-w-md mx-auto text-center">
-  <h2 class="text-2xl font-bold mb-4">Buy KenariCoin</h2>
-  <div class="bg-white rounded-xl shadow p-6">
-    <p class="mb-4 text-gray-600">
-      Kamu bisa membeli KenariCoin langsung di PancakeSwap.
-    </p>
-    <a href="https://pancakeswap.finance/swap?chain=bsc&outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de"
-       target="_blank"
-       class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 block text-center">
-      Beli via PancakeSwap
-    </a>
-  </div>
-</section>
-
-    <!-- Swap -->
-    <section id="swap" class="hidden">
+    <section id="swapbuy" class="hidden">
   <iframe
     src="https://pancakeswap.finance/swap?chain=bsc&outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de"
-    class="w-full h-screen border-0"
+    class="w-full h-[calc(100vh-64px)] border-0"
     allowfullscreen
     sandbox="allow-forms allow-popups allow-scripts allow-same-origin">
   </iframe>
