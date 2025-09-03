@@ -542,120 +542,53 @@
       await tx.wait();
     }
 
-  // --- tambahkan / pastikan ini ada di atas fungsi kalkulasi ---
-  const READ_ONLY_PROVIDER = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+    // ===============================
+    // Kalkulasi (Swap & Buy)
+    // ===============================
+    async function updateSwapOutput() {
+      const fromToken = document.getElementById("swapFromToken").value; // BNB/USDT/USDC
+      const amountIn = document.getElementById("swapFromAmount").value;
 
-  // pastikan TOKEN_DECIMALS konsisten
-  const TOKEN_DECIMALS = {
-    BNB: 18,
-    KN: 6,
-    USDT: 18,
-    USDC: 18
-  };
-
-  // helper
-  function toWei(amountStr, decimals) {
-    if (!amountStr) return ethers.constants.Zero;
-    // pastikan string dan bersih
-    const s = String(amountStr).trim();
-    if (s === "" || isNaN(s)) return ethers.constants.Zero;
-    return ethers.utils.parseUnits(s, decimals);
-  }
-  function fromWei(bn, decimals) {
-    try { return ethers.utils.formatUnits(bn, decimals); }
-    catch (e) { console.error("fromWei error:", e); return "0"; }
-  }
-
-  function getReadProvider() {
-    if (window.ethereum) {
-      try {
-        return new ethers.providers.Web3Provider(window.ethereum);
-      } catch (e) {
-        console.warn("web3provider creation failed, falling back:", e);
-      }
-    }
-    return READ_ONLY_PROVIDER;
-  }
-
-  function getRouterWith(providerOrSigner) {
-    return new ethers.Contract(ROUTER_ADDRESS, ROUTER_ABI, providerOrSigner);
-  }
-
-  function getPath(fromSymbol) {
-    if (fromSymbol === "BNB") return [WBNB, KN];
-    if (fromSymbol === "USDT") return [USDT, KN];
-    if (fromSymbol === "USDC") return [USDC, KN];
-    return [WBNB, KN];
-  }
-
-  // ===============================
-  // FIXED Kalkulasi (Swap & Buy)
-  // ===============================
-  async function updateSwapOutput() {
-    const fromToken = document.getElementById("swapFromToken").value; // BNB/USDT/USDC
-    const amountIn = document.getElementById("swapFromAmount").value;
-
-    if (!amountIn || isNaN(amountIn) || Number(amountIn) <= 0) {
-      document.getElementById("swapToAmount").value = "0.0";
-      return;
-    }
-
-    try {
-      // gunakan read-only provider (agar kalkulasi jalan walau wallet belum connect)
-      const readProvider = getReadProvider();
-      const routerRead = getRouterWith(readProvider);
-
-      const decIn = TOKEN_DECIMALS[fromToken] || 18;
-      const amountInWei = toWei(amountIn, decIn);
-      if (amountInWei.isZero()) {
+      if (!amountIn || isNaN(amountIn)) {
         document.getElementById("swapToAmount").value = "0.0";
         return;
       }
-
-      const path = getPath(fromToken);
-      const amounts = await routerRead.getAmountsOut(amountInWei, path);
-
-      const outWei = amounts[amounts.length - 1];
-      const out = fromWei(outWei, TOKEN_DECIMALS["KN"]);
-      document.getElementById("swapToAmount").value = Number(out).toFixed(6);
-    } catch (err) {
-      console.error("updateSwapOutput error:", err);
-      // tampilkan teks lebih informatif di UI
-      document.getElementById("swapToAmount").value = "Error";
-    }
-  }
-
-  async function updateBuyOutput() {
-    const fromToken = document.getElementById("buyFromToken").value;
-    const amountIn = document.getElementById("buyAmount").value;
-
-    if (!amountIn || isNaN(amountIn) || Number(amountIn) <= 0) {
-      document.getElementById("buyReceive").value = "0.0";
-      return;
+      try {
+        const router = getRouter(new ethers.providers.Web3Provider(window.ethereum || window).getSigner());
+        const decIn = fromToken === "BNB" ? 18 : 18; // BSC USDT/USDC are 18
+        const amountInWei = toWei(amountIn, decIn);
+        const path = getPath(fromToken, KN);
+        const amounts = await router.getAmountsOut(amountInWei, path);
+        const out = fromWei(amounts[amounts.length - 1], 6);
+        document.getElementById("swapToAmount").value = (+out).toFixed(6);
+      } catch (err) {
+        console.error("Swap calc error:", err);
+        document.getElementById("swapToAmount").value = "Error";
+      }
     }
 
-    try {
-      const readProvider = getReadProvider();
-      const routerRead = getRouterWith(readProvider);
+    async function updateBuyOutput() {
+      const fromToken = document.getElementById("buyFromToken").value;
+      const amountIn = document.getElementById("buyAmount").value;
 
-      const decIn = TOKEN_DECIMALS[fromToken] || 18;
-      const amountInWei = toWei(amountIn, decIn);
-      if (amountInWei.isZero()) {
+      if (!amountIn || isNaN(amountIn)) {
         document.getElementById("buyReceive").value = "0.0";
         return;
       }
-
-      const path = getPath(fromToken);
-      const amounts = await routerRead.getAmountsOut(amountInWei, path);
-
-      const outWei = amounts[amounts.length - 1];
-      const out = fromWei(outWei, TOKEN_DECIMALS["KN"]);
-      document.getElementById("buyReceive").value = Number(out).toFixed(6);
-    } catch (err) {
-      console.error("updateBuyOutput error:", err);
-      document.getElementById("buyReceive").value = "Error";
+      try {
+        const router = getRouter(new ethers.providers.Web3Provider(window.ethereum || window).getSigner());
+        const decIn = fromToken === "BNB" ? 18 : 18;
+        const amountInWei = toWei(amountIn, decIn);
+        const path = getPath(fromToken, KN);
+        const amounts = await router.getAmountsOut(amountInWei, path);
+        const out = fromWei(amounts[amounts.length - 1], 6);
+        document.getElementById("buyReceive").value = (+out).toFixed(6);
+      } catch (err) {
+        console.error("Buy calc error:", err);
+        document.getElementById("buyReceive").value = "Error";
+      }
     }
-  }
+
     // ===============================
     // Eksekusi Swap / Buy
     // ===============================
