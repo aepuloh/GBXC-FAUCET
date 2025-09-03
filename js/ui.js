@@ -1,44 +1,4 @@
 // ===============================
-// Toggle Mobile Menu
-// ===============================
-const menuBtn = document.getElementById("menuBtn");
-const mobileMenu = document.getElementById("mobileMenu");
-
-if (menuBtn) {
-  menuBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-  });
-}
-
-document.querySelectorAll("#mobileMenu a").forEach(link => {
-  link.addEventListener("click", () => {
-    mobileMenu.classList.add("hidden");
-  });
-});
-
-// ===============================
-// Modal Wallet
-// ===============================
-function openModal() {
-  document.getElementById("walletModal").classList.remove("hidden");
-}
-function closeModal() {
-  document.getElementById("walletModal").classList.add("hidden");
-}
-
-// ===============================
-// Page Navigation
-// ===============================
-function showPage(pageId) {
-  document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(pageId).classList.remove("hidden");
-}
-
-if (document.querySelector("main")) {
-  showPage("home");
-}
-
-// ===============================
 // Tab Navigation (Swap / Buy / Liquidity)
 // ===============================
 const tabButtons = document.querySelectorAll(".tabBtn");
@@ -57,7 +17,7 @@ tabButtons.forEach(btn => {
 // ===============================
 // PancakeSwap Router Setup
 // ===============================
-const ROUTER_ADDRESS = "0x10ED43C718714eb63d5aA57B78B54704E256024E"; // Pancake v2
+const ROUTER_ADDRESS = CONFIG.dex.routerAddress;
 const ROUTER_ABI = [
   {
     "inputs": [
@@ -65,33 +25,79 @@ const ROUTER_ABI = [
       { "internalType": "address[]", "name": "path", "type": "address[]" }
     ],
     "name": "getAmountsOut",
-    "outputs": [
-      { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }
-    ],
+    "outputs": [{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amountOutMin", "type": "uint256" },
+      { "internalType": "address[]", "name": "path", "type": "address[]" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "deadline", "type": "uint256" }
+    ],
+    "name": "swapExactETHForTokens",
+    "outputs": [{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountOutMin", "type": "uint256" },
+      { "internalType": "address[]", "name": "path", "type": "address[]" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "deadline", "type": "uint256" }
+    ],
+    "name": "swapExactTokensForTokens",
+    "outputs": [{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amountTokenDesired", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountTokenMin", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountETHMin", "type": "uint256" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "deadline", "type": "uint256" }
+    ],
+    "name": "addLiquidityETH",
+    "outputs": [
+      { "internalType": "uint256", "name": "amountToken", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountETH", "type": "uint256" },
+      { "internalType": "uint256", "name": "liquidity", "type": "uint256" }
+    ],
+    "stateMutability": "payable",
     "type": "function"
   }
 ];
 
-let router;
+let provider, signer, router;
 if (typeof window.ethereum !== "undefined") {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  signer = provider.getSigner();
   router = new ethers.Contract(ROUTER_ADDRESS, ROUTER_ABI, signer);
 }
 
 // ===============================
-// Token Address Map (BSC mainnet)
+// Token Address Map
 // ===============================
 const TOKENS = {
-  BNB: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+  BNB: CONFIG.dex.wbnb, // WBNB (BNB harus dibungkus)
   USDT: "0x55d398326f99059fF775485246999027B3197955",
   USDC: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-  KNC: CONFIG.token.contractAddress
+  KN: CONFIG.token.contractAddress
 };
 
+// Helper decimals
+function getDecimals(symbol) {
+  if (symbol === "KN") return CONFIG.token.decimals; // 6
+  return 18; // default stable/BNB
+}
+
 // ===============================
-// Kalkulasi Swap & Buy
+// Kalkulasi Output
 // ===============================
 async function updateSwapOutput() {
   const fromToken = document.getElementById("swapFromToken").value;
@@ -104,13 +110,13 @@ async function updateSwapOutput() {
   }
 
   try {
-    const amountInWei = ethers.utils.parseUnits(amountIn, 18);
+    const amountInWei = ethers.utils.parseUnits(amountIn, getDecimals(fromToken));
     const path = [TOKENS[fromToken], TOKENS[toToken]];
     const amounts = await router.getAmountsOut(amountInWei, path);
-    const out = ethers.utils.formatUnits(amounts[1], 18);
-    document.getElementById("swapToAmount").value = out;
+    const out = ethers.utils.formatUnits(amounts[1], getDecimals(toToken));
+    document.getElementById("swapToAmount").value = parseFloat(out).toFixed(6);
   } catch (err) {
-    console.error("Swap Error:", err);
+    console.error("Swap Kalkulasi Error:", err);
     document.getElementById("swapToAmount").value = "Error";
   }
 }
@@ -125,19 +131,19 @@ async function updateBuyOutput() {
   }
 
   try {
-    const amountInWei = ethers.utils.parseUnits(amountIn, 18);
-    const path = [TOKENS[fromToken], TOKENS.KNC];
+    const amountInWei = ethers.utils.parseUnits(amountIn, getDecimals(fromToken));
+    const path = [TOKENS[fromToken], TOKENS.KN];
     const amounts = await router.getAmountsOut(amountInWei, path);
-    const out = ethers.utils.formatUnits(amounts[1], 18);
-    document.getElementById("buyReceive").value = out;
+    const out = ethers.utils.formatUnits(amounts[1], CONFIG.token.decimals);
+    document.getElementById("buyReceive").value = parseFloat(out).toFixed(6);
   } catch (err) {
-    console.error("Buy Error:", err);
+    console.error("Buy Kalkulasi Error:", err);
     document.getElementById("buyReceive").value = "Error";
   }
 }
 
 // ===============================
-// Fungsi Eksekusi Swap
+// Eksekusi Swap
 // ===============================
 async function doSwap() {
   const fromToken = document.getElementById("swapFromToken").value;
@@ -150,145 +156,97 @@ async function doSwap() {
   }
 
   try {
-    const amountInWei = ethers.utils.parseUnits(amountIn, 18);
+    const amountInWei = ethers.utils.parseUnits(amountIn, getDecimals(fromToken));
     const path = [TOKENS[fromToken], TOKENS[toToken]];
     const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(ROUTER_ADDRESS, [
-      {
-        "inputs": [
-          { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
-          { "internalType": "uint256", "name": "amountOutMin", "type": "uint256" },
-          { "internalType": "address[]", "name": "path", "type": "address[]" },
-          { "internalType": "address", "name": "to", "type": "address" },
-          { "internalType": "uint256", "name": "deadline", "type": "uint256" }
-        ],
-        "name": "swapExactTokensForTokens",
-        "outputs": [{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ], signer);
-
     const userAddr = await signer.getAddress();
-    const tx = await contract.swapExactTokensForTokens(amountInWei, 0, path, userAddr, deadline);
 
-    console.log("Swap TX:", tx.hash);
-    alert("Swap berhasil! Tx Hash: " + tx.hash);
+    if (fromToken === "BNB") {
+      const tx = await router.swapExactETHForTokens(
+        0,
+        path,
+        userAddr,
+        deadline,
+        { value: amountInWei }
+      );
+      alert("✅ Swap sukses! Tx Hash: " + tx.hash);
+    } else {
+      const contract = new ethers.Contract(TOKENS[fromToken], CONFIG.token.abi, signer);
+      await contract.approve(ROUTER_ADDRESS, amountInWei);
+      const tx = await router.swapExactTokensForTokens(amountInWei, 0, path, userAddr, deadline);
+      alert("✅ Swap sukses! Tx Hash: " + tx.hash);
+    }
   } catch (err) {
     console.error("Swap Error:", err);
-    alert("Gagal swap: " + err.message);
+    alert("❌ Gagal swap: " + err.message);
   }
 }
 
 // ===============================
-// Fungsi Eksekusi Buy (to KNC)
+// Eksekusi Buy (BNB → KN)
 // ===============================
 async function doBuy() {
-  const fromToken = document.getElementById("buyFromToken").value;
   const amountIn = document.getElementById("buyAmount").value;
-
   if (!amountIn || isNaN(amountIn)) {
     alert("Masukkan jumlah valid");
     return;
   }
 
   try {
-    const amountInWei = ethers.utils.parseUnits(amountIn, 18);
-    const path = [TOKENS[fromToken], TOKENS.KNC];
+    const amountInWei = ethers.utils.parseUnits(amountIn, 18); // BNB selalu 18
+    const path = [TOKENS.BNB, TOKENS.KN];
     const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(ROUTER_ADDRESS, [
-      {
-        "inputs": [
-          { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
-          { "internalType": "uint256", "name": "amountOutMin", "type": "uint256" },
-          { "internalType": "address[]", "name": "path", "type": "address[]" },
-          { "internalType": "address", "name": "to", "type": "address" },
-          { "internalType": "uint256", "name": "deadline", "type": "uint256" }
-        ],
-        "name": "swapExactTokensForTokens",
-        "outputs": [{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ], signer);
-
     const userAddr = await signer.getAddress();
-    const tx = await contract.swapExactTokensForTokens(amountInWei, 0, path, userAddr, deadline);
 
-    console.log("Buy TX:", tx.hash);
-    alert("Buy berhasil! Tx Hash: " + tx.hash);
+    const tx = await router.swapExactETHForTokens(
+      0,
+      path,
+      userAddr,
+      deadline,
+      { value: amountInWei }
+    );
+    alert("✅ Buy sukses! Tx Hash: " + tx.hash);
   } catch (err) {
     console.error("Buy Error:", err);
-    alert("Gagal buy: " + err.message);
+    alert("❌ Buy gagal: " + err.message);
   }
 }
 
 // ===============================
-// Fungsi Add Liquidity
+// Add Liquidity (BNB–KN pool)
 // ===============================
 async function doAddLiquidity() {
-  const tokenA = document.getElementById("liqTokenA").value;
-  const tokenB = document.getElementById("liqTokenB").value;
-  const amountA = document.getElementById("liqAmountA").value;
-  const amountB = document.getElementById("liqAmountB").value;
+  const amountBNB = document.getElementById("liqFromAmount").value;
+  const amountKN = document.getElementById("liqKNC").value;
 
-  if (!amountA || !amountB || isNaN(amountA) || isNaN(amountB)) {
+  if (!amountBNB || !amountKN || isNaN(amountBNB) || isNaN(amountKN)) {
     alert("Masukkan jumlah valid");
     return;
   }
 
   try {
-    const amountAWei = ethers.utils.parseUnits(amountA, 18);
-    const amountBWei = ethers.utils.parseUnits(amountB, 18);
+    const amountBNBWei = ethers.utils.parseUnits(amountBNB, 18);
+    const amountKNWei = ethers.utils.parseUnits(amountKN, CONFIG.token.decimals);
     const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(ROUTER_ADDRESS, [
-      {
-        "inputs": [
-          { "internalType": "address", "name": "tokenA", "type": "address" },
-          { "internalType": "address", "name": "tokenB", "type": "address" },
-          { "internalType": "uint256", "name": "amountADesired", "type": "uint256" },
-          { "internalType": "uint256", "name": "amountBDesired", "type": "uint256" },
-          { "internalType": "uint256", "name": "amountAMin", "type": "uint256" },
-          { "internalType": "uint256", "name": "amountBMin", "type": "uint256" },
-          { "internalType": "address", "name": "to", "type": "address" },
-          { "internalType": "uint256", "name": "deadline", "type": "uint256" }
-        ],
-        "name": "addLiquidity",
-        "outputs": [
-          { "internalType": "uint256", "name": "amountA", "type": "uint256" },
-          { "internalType": "uint256", "name": "amountB", "type": "uint256" },
-          { "internalType": "uint256", "name": "liquidity", "type": "uint256" }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ], signer);
-
     const userAddr = await signer.getAddress();
-    const tx = await contract.addLiquidity(
-      TOKENS[tokenA],
-      TOKENS[tokenB],
-      amountAWei,
-      amountBWei,
+
+    // Approve KN token
+    const knContract = new ethers.Contract(TOKENS.KN, CONFIG.token.abi, signer);
+    await knContract.approve(ROUTER_ADDRESS, amountKNWei);
+
+    const tx = await router.addLiquidityETH(
+      TOKENS.KN,
+      amountKNWei,
       0,
       0,
       userAddr,
-      deadline
+      deadline,
+      { value: amountBNBWei }
     );
 
-    console.log("Liquidity TX:", tx.hash);
-    alert("Liquidity berhasil! Tx Hash: " + tx.hash);
+    alert("✅ Liquidity sukses! Tx Hash: " + tx.hash);
   } catch (err) {
     console.error("Liquidity Error:", err);
-    alert("Gagal add liquidity: " + err.message);
+    alert("❌ Gagal add liquidity: " + err.message);
   }
 }
