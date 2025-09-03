@@ -139,26 +139,32 @@ function copyContract() {
   </div>
 
   <!-- Tab Contents -->
-  <div id="tabContents" class="bg-white rounded-xl shadow p-6 space-y-6">
-    
+  <div id="tabContents" class="bg-white rounded-xl shadow p-6">
     <!-- Swap -->
     <div id="tab-swap" class="tabContent">
-      <label class="block mb-2 font-semibold">From</label>
-      <div class="flex space-x-2 mb-4">
-        <select id="swapFromToken" class="border rounded-xl p-3 w-32">
-          <option value="BNB">BNB</option>
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-        </select>
-        <input type="number" id="swapFromAmount" placeholder="0.0" class="flex-grow p-3 border rounded-xl">
+      <div class="mb-4">
+        <label class="block mb-2 font-semibold">From</label>
+        <div class="flex space-x-2">
+          <select id="swapFromToken" class="p-3 border rounded-xl">
+            <option value="BNB">BNB</option>
+            <option value="USDT">USDT</option>
+            <option value="USDC">USDC</option>
+          </select>
+          <input type="number" id="swapFromAmount" placeholder="0.0"
+                 class="flex-grow p-3 border rounded-xl"
+                 oninput="updateSwapOutput()">
+        </div>
       </div>
 
-      <label class="block mb-2 font-semibold">To</label>
-      <div class="flex space-x-2 mb-4">
-        <select id="swapToToken" class="border rounded-xl p-3 w-32">
-          <option value="KNC">KNC</option>
-        </select>
-        <input type="text" id="swapToAmount" disabled value="0.0" class="flex-grow p-3 border rounded-xl bg-gray-100">
+      <div class="mb-4">
+        <label class="block mb-2 font-semibold">To</label>
+        <div class="flex space-x-2">
+          <select id="swapToToken" class="p-3 border rounded-xl">
+            <option value="KN">KN</option>
+          </select>
+          <input type="text" id="swapToAmount" disabled value="0.0"
+                 class="flex-grow p-3 border rounded-xl bg-gray-100">
+        </div>
       </div>
 
       <button onclick="doSwap()" class="w-full py-3 bg-yellow-500 text-white font-bold rounded-xl hover:bg-yellow-600">
@@ -168,14 +174,24 @@ function copyContract() {
 
     <!-- Buy -->
     <div id="tab-buy" class="tabContent hidden">
-      <label class="block mb-2 font-semibold">Pay With</label>
-      <div class="flex space-x-2 mb-4">
-        <select id="buyToken" class="border rounded-xl p-3 w-32">
-          <option value="BNB">BNB</option>
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-        </select>
-        <input type="number" id="buyAmount" placeholder="0.0" class="flex-grow p-3 border rounded-xl">
+      <div class="mb-4">
+        <label class="block mb-2 font-semibold">Pay With</label>
+        <div class="flex space-x-2">
+          <select id="buyFromToken" class="p-3 border rounded-xl">
+            <option value="BNB">BNB</option>
+            <option value="USDT">USDT</option>
+            <option value="USDC">USDC</option>
+          </select>
+          <input type="number" id="buyAmount" placeholder="0.0"
+                 class="flex-grow p-3 border rounded-xl"
+                 oninput="updateBuyOutput()">
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block mb-2 font-semibold">Receive (KN)</label>
+        <input type="text" id="buyReceive" disabled value="0.0"
+               class="w-full p-3 border rounded-xl bg-gray-100">
       </div>
 
       <button onclick="doBuy()" class="w-full py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600">
@@ -185,33 +201,30 @@ function copyContract() {
 
     <!-- Add Liquidity -->
     <div id="tab-liquidity" class="tabContent hidden">
-      <label class="block mb-2 font-semibold">Token A</label>
-      <div class="flex space-x-2 mb-4">
-        <select id="liqTokenA" class="border rounded-xl p-3 w-32">
-          <option value="BNB">BNB</option>
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-          <option value="KNC">KNC</option>
-        </select>
-        <input type="number" id="liqAmountA" placeholder="0.0" class="flex-grow p-3 border rounded-xl">
+      <div class="mb-4">
+        <label class="block mb-2 font-semibold">Amount BNB / USDT / USDC</label>
+        <div class="flex space-x-2">
+          <select id="liqFromToken" class="p-3 border rounded-xl">
+            <option value="BNB">BNB</option>
+            <option value="USDT">USDT</option>
+            <option value="USDC">USDC</option>
+          </select>
+          <input type="number" id="liqFromAmount" placeholder="0.0"
+                 class="flex-grow p-3 border rounded-xl"
+                 oninput="updateLiquidityOutput()">
+        </div>
       </div>
 
-      <label class="block mb-2 font-semibold">Token B</label>
-      <div class="flex space-x-2 mb-4">
-        <select id="liqTokenB" class="border rounded-xl p-3 w-32">
-          <option value="BNB">BNB</option>
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-          <option value="KNC" selected>KNC</option>
-        </select>
-        <input type="number" id="liqAmountB" placeholder="0.0" class="flex-grow p-3 border rounded-xl">
+      <div class="mb-4">
+        <label class="block mb-2 font-semibold">Amount KN</label>
+        <input type="number" id="liqKNC" placeholder="0.0"
+               class="w-full p-3 border rounded-xl">
       </div>
 
       <button onclick="addLiquidity()" class="w-full py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600">
         Add Liquidity
       </button>
     </div>
-
   </div>
 </section>
     <!-- Contact -->
