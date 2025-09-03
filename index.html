@@ -6,8 +6,7 @@
   <title>KenariCoin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="img/logo.png">
-
-  <!-- Ethers.js (versi UMD agar ethers dikenali di browser) -->
+  <!-- Ethers.js (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body class="bg-gradient-to-br from-yellow-100 to-yellow-50 min-h-screen flex flex-col">
@@ -23,333 +22,298 @@
         </div>
         <!-- Desktop Menu -->
         <div class="hidden md:flex space-x-6">
-  <a href="#" onclick="navigate('home')" class="hover:text-yellow-500">Home</a>
-  <a href="#" onclick="navigate('wallet')" class="hover:text-yellow-500">Wallet</a>
-  <a href="#" onclick="navigate('swapbuy')" class="hover:text-yellow-500">Swap/Buy</a>
-  <a href="#" onclick="navigate('contact')" class="hover:text-yellow-500">Contact</a>
-  <a href="#" onclick="navigate('about')" class="hover:text-yellow-500">About</a>
-  <a href="#" onclick="navigate('faq')" class="hover:text-yellow-500">FAQ</a>
-</div>
-<!-- Connect Button -->
-<button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
-  Connect Wallet
-</button>
-<!-- Mobile Hamburger -->
-<div class="md:hidden">
-  <button id="menuBtn" class="focus:outline-none">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M4 6h16M4 12h16M4 18h16"/>
-    </svg>
-  </button>
-</div>
-</div>
-</div>
-<!-- Mobile Menu -->
-<div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
-  <a href="#" onclick="navigate('home')" class="block py-2 hover:text-yellow-500">Home</a>
-  <a href="#" onclick="navigate('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
-  <a href="#" onclick="navigate('swapbuy')" class="block py-2 hover:text-yellow-500">Swap/Buy</a>
-  <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
-  <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
-  <a href="#" onclick="navigate('faq')" class="block py-2 hover:text-yellow-500">FAQ</a>
-</div>
-</nav>
+          <a href="#" onclick="navigate('home')" class="hover:text-yellow-500">Home</a>
+          <a href="#" onclick="navigate('wallet')" class="hover:text-yellow-500">Wallet</a>
+          <a href="#" onclick="navigate('swapbuy')" class="hover:text-yellow-500">Swap/Buy</a>
+          <a href="#" onclick="navigate('contact')" class="hover:text-yellow-500">Contact</a>
+          <a href="#" onclick="navigate('about')" class="hover:text-yellow-500">About</a>
+          <a href="#" onclick="navigate('faq')" class="hover:text-yellow-500">FAQ</a>
+        </div>
+        <!-- Connect Button -->
+        <button id="connectBtn" onclick="openModal()" class="px-4 py-2 bg-yellow-500 text-white rounded-xl font-semibold hover:bg-yellow-600 shadow">
+          Connect Wallet
+        </button>
+        <!-- Mobile Hamburger -->
+        <div class="md:hidden">
+          <button id="menuBtn" class="focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden px-4 pb-4">
+      <a href="#" onclick="navigate('home')" class="block py-2 hover:text-yellow-500">Home</a>
+      <a href="#" onclick="navigate('wallet')" class="block py-2 hover:text-yellow-500">Wallet</a>
+      <a href="#" onclick="navigate('swapbuy')" class="block py-2 hover:text-yellow-500">Swap/Buy</a>
+      <a href="#" onclick="navigate('contact')" class="block py-2 hover:text-yellow-500">Contact</a>
+      <a href="#" onclick="navigate('about')" class="block py-2 hover:text-yellow-500">About</a>
+      <a href="#" onclick="navigate('faq')" class="block py-2 hover:text-yellow-500">FAQ</a>
+    </div>
+  </nav>
 
   <!-- Pages -->
   <main class="flex-grow px-4 pt-24 pb-10">
 
     <!-- Home -->
     <section id="home" class="text-center">
-  <img src="img/logo.png" alt="KenariCoin Logo" class="w-32 h-32 rounded-full mx-auto shadow-lg">
-  <h1 class="text-3xl font-bold mt-4">Selamat Datang di KenariCoin</h1>
-  <p class="text-gray-600 max-w-2xl mx-auto mt-4 leading-relaxed">
-    KenariCoin adalah token inovatif berbasis <span class="font-semibold">BNB Smart Chain (BEP-20)</span> 
-    yang dirancang untuk membangun ekosistem keuangan terdesentralisasi yang aman, cepat, 
-    dan transparan.  
-    <br><br>
-    Proyek ini masih berada dalam tahap pengembangan awal, dengan fokus pada 
-    <span class="font-semibold">pengembangan utilitas nyata</span> seperti sistem pembayaran mikro, 
-    integrasi dompet, program reward, serta mekanisme staking di masa depan.  
-    <br><br>
-    Visi kami adalah menghadirkan token yang dapat digunakan secara luas, tidak hanya 
-    sebagai aset spekulatif, namun juga sebagai <span class="font-semibold">alat transaksi sehari-hari</span>.  
-    Dengan komunitas yang solid, transparansi tim, dan roadmap yang terukur, 
-    KenariCoin ditujukan untuk menjadi bagian dari transformasi digital di dunia crypto.  
-    <br><br>
-    Saat ini, KenariCoin terus memperluas kolaborasi, membangun likuiditas di PancakeSwap, 
-    serta melakukan verifikasi kontrak dan identitas di BscScan.  
-    Langkah-langkah ini merupakan bagian dari komitmen kami untuk membuktikan bahwa 
-    KenariCoin adalah proyek yang <span class="font-semibold">serius dan berkelanjutan</span>.  
-  </p>
+      <img src="img/logo.png" alt="KenariCoin Logo" class="w-32 h-32 rounded-full mx-auto shadow-lg">
+      <h1 class="text-3xl font-bold mt-4">Selamat Datang di KenariCoin</h1>
+      <p class="text-gray-600 max-w-2xl mx-auto mt-4 leading-relaxed">
+        KenariCoin adalah token inovatif berbasis <span class="font-semibold">BNB Smart Chain (BEP-20)</span> 
+        yang dirancang untuk membangun ekosistem keuangan terdesentralisasi yang aman, cepat, 
+        dan transparan.  
+        <br><br>
+        Proyek ini masih berada dalam tahap pengembangan awal, dengan fokus pada 
+        <span class="font-semibold">pengembangan utilitas nyata</span> seperti sistem pembayaran mikro, 
+        integrasi dompet, program reward, serta mekanisme staking di masa depan.  
+        <br><br>
+        Visi kami adalah menghadirkan token yang dapat digunakan secara luas, tidak hanya 
+        sebagai aset spekulatif, namun juga sebagai <span class="font-semibold">alat transaksi sehari-hari</span>.  
+        Dengan komunitas yang solid, transparansi tim, dan roadmap yang terukur, 
+        KenariCoin ditujukan untuk menjadi bagian dari transformasi digital di dunia crypto.  
+      </p>
       <!-- Contract Address Box -->
-<div class="mt-6 max-w-xl mx-auto bg-white shadow rounded-xl p-4 text-gray-700">
-  <h3 class="font-bold mb-2">📜 Contract Address</h3>
-  <div class="flex items-center justify-between">
-    <span id="contractAddr" class="text-sm break-all">
-      0x1390f63AF92448c46368443496a2bfc1469558de
-    </span>
-    <button onclick="copyContract()" 
-            class="ml-2 px-3 py-1 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600">
-      Copy
-    </button>
-  </div>
-</div>
+      <div class="mt-6 max-w-xl mx-auto bg-white shadow rounded-xl p-4 text-gray-700">
+        <h3 class="font-bold mb-2">📜 Contract Address</h3>
+        <div class="flex items-center justify-between">
+          <span id="contractAddr" class="text-sm break-all">
+            0x1390f63AF92448c46368443496a2bfc1469558de
+          </span>
+          <button onclick="copyContract()" 
+                  class="ml-2 px-3 py-1 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600">
+            Copy
+          </button>
+        </div>
+      </div>
 
-<script>
-function copyContract() {
-  const addr = document.getElementById("contractAddr").innerText;
-  navigator.clipboard.writeText(addr);
-  alert("✅ Contract Address disalin: " + addr);
-}
-</script>
-      
-
-  <!-- Roadmap -->
-  <div class="mt-10 max-w-3xl mx-auto text-left bg-white shadow rounded-xl p-6">
-    <h2 class="text-2xl font-bold mb-4 text-center">🚀 Roadmap KenariCoin</h2>
-    <ul class="space-y-3 text-gray-700">
-      <li>✅ <span class="font-semibold">Q1 2025:</span> Peluncuran kontrak token & dashboard awal.</li>
-      <li>✅ <span class="font-semibold">Q2 2025:</span> Listing di PancakeSwap & pembangunan komunitas.</li>
-      <li>🔄 <span class="font-semibold">Q3 2025:</span> Verifikasi kontrak di BscScan & pengajuan ke CoinGecko/CMC.</li>
-      <li>🔄 <span class="font-semibold">Q4 2025:</span> Implementasi staking & program reward komunitas.</li>
-      <li>⏳ <span class="font-semibold">2026:</span> Ekspansi utilitas token ke sistem pembayaran & integrasi mitra.</li>
-    </ul>
-  </div>
-</section>
+      <!-- Roadmap -->
+      <div class="mt-10 max-w-3xl mx-auto text-left bg-white shadow rounded-xl p-6">
+        <h2 class="text-2xl font-bold mb-4 text-center">🚀 Roadmap KenariCoin</h2>
+        <ul class="space-y-3 text-gray-700">
+          <li>✅ <span class="font-semibold">Q1 2025:</span> Peluncuran kontrak token & dashboard awal.</li>
+          <li>✅ <span class="font-semibold">Q2 2025:</span> Listing di PancakeSwap & pembangunan komunitas.</li>
+          <li>🔄 <span class="font-semibold">Q3 2025:</span> Verifikasi kontrak di BscScan & pengajuan ke CoinGecko/CMC.</li>
+          <li>🔄 <span class="font-semibold">Q4 2025:</span> Implementasi staking & program reward komunitas.</li>
+          <li>⏳ <span class="font-semibold">2026:</span> Ekspansi utilitas token ke sistem pembayaran & integrasi mitra.</li>
+        </ul>
+      </div>
+    </section>
 
     <!-- Wallet -->
     <section id="wallet" class="hidden max-w-md mx-auto text-center">
       <h2 class="text-2xl font-bold mb-4">Wallet Balance</h2>
       <div class="bg-white rounded-xl shadow p-6 text-left">
         <p class="text-gray-700">BNB: <span id="bnbBalance">0 BNB</span></p>
-        <p class="text-gray-700">KNC: <span id="tokenBalance">0 KNC</span></p>
+        <p class="text-gray-700">KN: <span id="tokenBalance">0 KN</span></p>
       </div>
     </section>
 
-<!-- Swap/Buy/Add Liquidity -->
-<section id="swapbuy" class="hidden max-w-2xl mx-auto">
-  <h2 class="text-2xl font-bold mb-6 text-center">Swap / Buy / Add Liquidity</h2>
+    <!-- Swap/Buy/Add Liquidity -->
+    <section id="swapbuy" class="hidden max-w-2xl mx-auto">
+      <h2 class="text-2xl font-bold mb-6 text-center">Swap / Buy / Add Liquidity</h2>
 
-  <!-- Tabs -->
-  <div class="flex justify-center mb-6 space-x-4 border-b">
-    <button class="tabBtn py-2 px-4 font-semibold border-b-2 border-transparent hover:border-yellow-500" data-tab="swap">Swap</button>
-    <button class="tabBtn py-2 px-4 font-semibold border-b-2 border-transparent hover:border-yellow-500" data-tab="buy">Buy</button>
-    <button class="tabBtn py-2 px-4 font-semibold border-b-2 border-transparent hover:border-yellow-500" data-tab="liquidity">Add Liquidity</button>
-  </div>
+      <!-- Tabs -->
+      <div class="flex justify-center mb-6 space-x-4 border-b">
+        <button class="tabBtn py-2 px-4 font-semibold border-b-2 border-transparent hover:border-yellow-500" data-tab="swap">Swap</button>
+        <button class="tabBtn py-2 px-4 font-semibold border-b-2 border-transparent hover:border-yellow-500" data-tab="buy">Buy</button>
+        <button class="tabBtn py-2 px-4 font-semibold border-b-2 border-transparent hover:border-yellow-500" data-tab="liquidity">Add Liquidity</button>
+      </div>
 
-  <!-- Tab Contents -->
-  <div id="tabContents" class="bg-white rounded-xl shadow p-6">
-    <!-- Swap -->
-    <div id="tab-swap" class="tabContent">
-      <div class="mb-4">
-        <label class="block mb-2 font-semibold">From</label>
-        <div class="flex space-x-2">
-          <select id="swapFromToken" class="p-3 border rounded-xl">
-            <option value="BNB">BNB</option>
-            <option value="USDT">USDT</option>
-            <option value="USDC">USDC</option>
-          </select>
-          <input type="number" id="swapFromAmount" placeholder="0.0"
-                 class="flex-grow p-3 border rounded-xl"
-                 oninput="updateSwapOutput()">
+      <!-- Tab Contents -->
+      <div id="tabContents" class="bg-white rounded-xl shadow p-6">
+        <!-- Swap -->
+        <div id="tab-swap" class="tabContent">
+          <div class="mb-4">
+            <label class="block mb-2 font-semibold">From</label>
+            <div class="flex space-x-2">
+              <select id="swapFromToken" class="p-3 border rounded-xl">
+                <option value="BNB">BNB</option>
+                <option value="USDT">USDT</option>
+                <option value="USDC">USDC</option>
+              </select>
+              <input type="number" id="swapFromAmount" placeholder="0.0"
+                     class="flex-grow p-3 border rounded-xl"
+                     oninput="updateSwapOutput()">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="block mb-2 font-semibold">To</label>
+            <div class="flex space-x-2">
+              <select id="swapToToken" class="p-3 border rounded-xl" disabled>
+                <option value="KN">KN</option>
+              </select>
+              <input type="text" id="swapToAmount" disabled value="0.0"
+                     class="flex-grow p-3 border rounded-xl bg-gray-100">
+            </div>
+          </div>
+
+          <button onclick="doSwap()" class="w-full py-3 bg-yellow-500 text-white font-bold rounded-xl hover:bg-yellow-600">
+            Swap
+          </button>
+        </div>
+
+        <!-- Buy -->
+        <div id="tab-buy" class="tabContent hidden">
+          <div class="mb-4">
+            <label class="block mb-2 font-semibold">Pay With</label>
+            <div class="flex space-x-2">
+              <select id="buyFromToken" class="p-3 border rounded-xl">
+                <option value="BNB">BNB</option>
+                <option value="USDT">USDT</option>
+                <option value="USDC">USDC</option>
+              </select>
+              <input type="number" id="buyAmount" placeholder="0.0"
+                     class="flex-grow p-3 border rounded-xl"
+                     oninput="updateBuyOutput()">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="block mb-2 font-semibold">Receive (KN)</label>
+            <input type="text" id="buyReceive" disabled value="0.0"
+                   class="w-full p-3 border rounded-xl bg-gray-100">
+          </div>
+
+          <button onclick="doBuy()" class="w-full py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600">
+            Buy KN
+          </button>
+        </div>
+
+        <!-- Add Liquidity (BNB-KN) -->
+        <div id="tab-liquidity" class="tabContent hidden">
+          <div class="mb-4">
+            <label class="block mb-2 font-semibold">Amount BNB</label>
+            <input type="number" id="liqFromAmount" placeholder="0.0"
+                   class="w-full p-3 border rounded-xl">
+          </div>
+
+          <div class="mb-4">
+            <label class="block mb-2 font-semibold">Amount KN</label>
+            <input type="number" id="liqKNC" placeholder="0.0"
+                   class="w-full p-3 border rounded-xl">
+          </div>
+
+          <button onclick="doAddLiquidity()" class="w-full py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600">
+            Add Liquidity
+          </button>
         </div>
       </div>
+    </section>
 
-      <div class="mb-4">
-        <label class="block mb-2 font-semibold">To</label>
-        <div class="flex space-x-2">
-          <select id="swapToToken" class="p-3 border rounded-xl">
-  <option value="KNC">KNC</option>
-</select>
-          <input type="text" id="swapToAmount" disabled value="0.0"
-                 class="flex-grow p-3 border rounded-xl bg-gray-100">
-        </div>
-      </div>
-
-      <button onclick="doSwap()" class="w-full py-3 bg-yellow-500 text-white font-bold rounded-xl hover:bg-yellow-600">
-        Swap
-      </button>
-    </div>
-
-    <!-- Buy -->
-    <div id="tab-buy" class="tabContent hidden">
-      <div class="mb-4">
-        <label class="block mb-2 font-semibold">Pay With</label>
-        <div class="flex space-x-2">
-          <select id="buyFromToken" class="p-3 border rounded-xl">
-            <option value="BNB">BNB</option>
-            <option value="USDT">USDT</option>
-            <option value="USDC">USDC</option>
-          </select>
-          <input type="number" id="buyAmount" placeholder="0.0"
-                 class="flex-grow p-3 border rounded-xl"
-                 oninput="updateBuyOutput()">
-        </div>
-      </div>
-
-      <div class="mb-4">
-        <label class="block mb-2 font-semibold">Receive (KNC)</label>
-        <input type="text" id="buyReceive" disabled value="0.0"
-               class="w-full p-3 border rounded-xl bg-gray-100">
-      </div>
-
-      <button onclick="doBuy()" class="w-full py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600">
-        Buy KNC
-      </button>
-    </div>
-
-    <!-- Add Liquidity -->
-    <div id="tab-liquidity" class="tabContent hidden">
-      <div class="mb-4">
-        <label class="block mb-2 font-semibold">Amount BNB / USDT / USDC</label>
-        <div class="flex space-x-2">
-          <select id="liqFromToken" class="p-3 border rounded-xl">
-            <option value="BNB">BNB</option>
-            <option value="USDT">USDT</option>
-            <option value="USDC">USDC</option>
-          </select>
-          <input type="number" id="liqFromAmount" placeholder="0.0"
-                 class="flex-grow p-3 border rounded-xl"
-                 oninput="updateLiquidityOutput()">
-        </div>
-      </div>
-
-      <div class="mb-4">
-        <label class="block mb-2 font-semibold">Amount KN</label>
-        <input type="number" id="liqKNC" placeholder="0.0"
-               class="w-full p-3 border rounded-xl">
-      </div>
-
-      <button onclick="doAddLiquidity()" class="w-full py-3 ...">Add Liquidity</button>
-    </div>
-  </div>
-</section>
     <!-- Contact -->
-<section id="contact" class="hidden text-center">
-  <h2 class="text-2xl font-bold mb-4">Contact</h2>
-  
-  <div class="flex flex-col space-y-3 max-w-xs mx-auto">
-    <a href="https://t.me/KenariCoinKnc" target="_blank"
-       class="px-4 py-2 bg-blue-500 text-white rounded-xl font-semibold shadow hover:bg-blue-600">
-       📱 Telegram
-    </a>
-    <a href="https://x.com/itsmeaukwa36342?t=gkbpxl_QotgkC6wnTIoCng&s=09" target="_blank"
-       class="px-4 py-2 bg-black text-white rounded-xl font-semibold shadow hover:bg-gray-800">
-       ✖️ X (Twitter)
-    </a>
-    <a href="https://discord.gg/YourDiscordInvite" target="_blank"
-       class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-semibold shadow hover:bg-indigo-700">
-       🎮 Discord
-    </a>
-  </div>
+    <section id="contact" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Contact</h2>
+      <div class="flex flex-col space-y-3 max-w-xs mx-auto">
+        <a href="https://t.me/KenariCoinKnc" target="_blank"
+           class="px-4 py-2 bg-blue-500 text-white rounded-xl font-semibold shadow hover:bg-blue-600">
+           📱 Telegram
+        </a>
+        <a href="https://x.com/itsmeaukwa36342?t=gkbpxl_QotgkC6wnTIoCng&s=09" target="_blank"
+           class="px-4 py-2 bg-black text-white rounded-xl font-semibold shadow hover:bg-gray-800">
+           ✖️ X (Twitter)
+        </a>
+        <a href="https://discord.gg/YourDiscordInvite" target="_blank"
+           class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-semibold shadow hover:bg-indigo-700">
+           🎮 Discord
+        </a>
+      </div>
 
-  <!-- Info tambahan -->
-  <div class="mt-8 max-w-md mx-auto text-gray-700 space-y-2">
-    <p>📧 Email: <a href="mailto:kenaricoinkn@gmail.com" class="text-yellow-600 font-semibold hover:underline">support@kenaricoin.com</a></p>
-    <p>🔗 Smart Contract: 
-      <a href="https://bscscan.com/token/0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" 
-         class="text-yellow-600 font-semibold hover:underline">
-         View on BscScan
-      </a>
-    </p>
-  </div>
-</section>
+      <div class="mt-8 max-w-md mx-auto text-gray-700 space-y-2">
+        <p>📧 Email: <a href="mailto:kenaricoinkn@gmail.com" class="text-yellow-600 font-semibold hover:underline">kenaricoinkn@gmail.com</a></p>
+        <p>🔗 Smart Contract: 
+          <a href="https://bscscan.com/token/0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" 
+             class="text-yellow-600 font-semibold hover:underline">
+             View on BscScan
+          </a>
+        </p>
+      </div>
+    </section>
 
     <!-- About -->
     <section id="about" class="hidden text-center">
-  <h2 class="text-2xl font-bold mb-4">Tentang KenariCoin</h2>
-  <div class="max-w-3xl mx-auto text-gray-700 leading-relaxed space-y-4">
-    <p>
-      <span class="font-semibold">KenariCoin (KN)</span> adalah aset digital berbasis 
-      <span class="font-semibold">BNB Smart Chain (BEP-20)</span> yang dibangun dengan tujuan 
-      menghadirkan solusi keuangan terdesentralisasi yang lebih mudah diakses oleh siapa saja. 
-      KenariCoin hadir bukan hanya sebagai token, tetapi sebagai fondasi ekosistem yang 
-      berfokus pada <span class="font-semibold">transparansi, kecepatan, dan kegunaan nyata</span>.
-    </p>
-    <p>
-      Kami percaya bahwa masa depan keuangan terletak pada sistem yang terbuka dan inklusif. 
-      Oleh karena itu, KenariCoin dirancang agar dapat digunakan dalam berbagai aplikasi, 
-      mulai dari transaksi sehari-hari, program reward, staking, hingga integrasi ke dalam 
-      sistem pembayaran mitra di masa depan.
-    </p>
-    <p>
-      KenariCoin saat ini masih dalam tahap pengembangan aktif. Tim kami berkomitmen 
-      untuk terus melakukan <span class="font-semibold">pengembangan bertahap</span>, 
-      termasuk membangun likuiditas di PancakeSwap, mempersiapkan listing di 
-      <span class="font-semibold">CoinGecko dan CoinMarketCap</span>, serta membuka peluang kolaborasi 
-      dengan berbagai komunitas dan proyek crypto lainnya.
-    </p>
-    <p>
-      Visi kami adalah menciptakan token yang tidak hanya berfungsi sebagai sarana investasi, 
-      namun juga memiliki <span class="font-semibold">utilitas nyata</span> di kehidupan sehari-hari. 
-      Dengan dukungan komunitas yang kuat dan pengembangan yang berkesinambungan, 
-      kami yakin KenariCoin dapat menjadi salah satu proyek yang <span class="font-semibold">berdampak positif</span> 
-      di dunia blockchain.
-    </p>
-    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg shadow mt-6 text-left">
-      <h3 class="text-lg font-bold mb-2">🎯 Misi KenariCoin</h3>
-      <ul class="list-disc list-inside space-y-2">
-        <li>Menyediakan token dengan utilitas nyata dan bisa dipakai sehari-hari.</li>
-        <li>Membangun komunitas yang solid dengan sistem reward transparan.</li>
-        <li>Memperluas ekosistem melalui kemitraan strategis.</li>
-        <li>Mengembangkan fitur staking & program loyalitas.</li>
-        <li>Mendukung adopsi blockchain dengan cara yang mudah dipahami pengguna baru.</li>
-      </ul>
-      <!-- Tokenomics -->
-<div class="bg-white shadow rounded-xl p-6 mt-8 text-left">
-  <h3 class="text-xl font-bold mb-4">📊 Tokenomics</h3>
-  <ul class="list-disc list-inside space-y-2 text-gray-700">
-    <li><span class="font-semibold">Total Supply:</span> 1,000,000,000 KN</li>
-    <li><span class="font-semibold">Liquidity Pool:</span> 50%</li>
-    <li><span class="font-semibold">Staking & Rewards:</span> 20%</li>
-    <li><span class="font-semibold">Community Airdrop:</span> 20%</li>
-    <li><span class="font-semibold">Development Team:</span> 10%</li>
-  </ul>
-    </div>
-  </div>
-</section>
-    <section id="faq" class="hidden text-center">
-  <h2 class="text-2xl font-bold mb-4">FAQ (Pertanyaan Umum)</h2>
-  <div class="max-w-2xl mx-auto text-left space-y-4 text-gray-700 leading-relaxed">
-    <div class="bg-white shadow rounded-xl p-4">
-      <h3 class="font-semibold">❓ Apa itu KenariCoin?</h3>
-      <p>KenariCoin (KN) adalah token BEP-20 berbasis Binance Smart Chain yang dirancang untuk menghadirkan ekosistem keuangan terdesentralisasi dengan fokus pada kecepatan, transparansi, dan utilitas nyata.</p>
-    </div>
-    <div class="bg-white shadow rounded-xl p-4">
-      <h3 class="font-semibold">❓ Bagaimana cara membeli KenariCoin?</h3>
-      <p>Kamu bisa membeli KenariCoin melalui 
-        <a href="https://pancakeswap.finance/swap?outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-600 font-semibold hover:underline">PancakeSwap</a> 
-        dengan menukar BNB ke KN.
-      </p>
-    </div>
-    <div class="bg-white shadow rounded-xl p-4">
-      <h3 class="font-semibold">❓ Apakah ada fitur staking?</h3>
-      <p>Ya, fitur staking sedang dalam tahap pengembangan dan akan dirilis sesuai roadmap pada Q7 2025.</p>
-    </div>
-    <div class="bg-white shadow rounded-xl p-4">
-      <h3 class="font-semibold">❓ Di mana saya bisa melihat kontrak token?</h3>
-      <p>Kontrak KenariCoin bisa dilihat langsung di 
-        <a href="https://bscscan.com/token/0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-600 font-semibold hover:underline">BscScan</a>.
-      </p>
-    </div>
-  </div>
+      <h2 class="text-2xl font-bold mb-4">Tentang KenariCoin</h2>
+      <div class="max-w-3xl mx-auto text-gray-700 leading-relaxed space-y-4">
+        <p>
+          <span class="font-semibold">KenariCoin (KN)</span> adalah aset digital berbasis 
+          <span class="font-semibold">BNB Smart Chain (BEP-20)</span> yang dibangun dengan tujuan 
+          menghadirkan solusi keuangan terdesentralisasi yang lebih mudah diakses oleh siapa saja.
+        </p>
+        <p>
+          KenariCoin hadir bukan hanya sebagai token, tetapi sebagai fondasi ekosistem yang 
+          berfokus pada <span class="font-semibold">transparansi, kecepatan, dan kegunaan nyata</span>.
+        </p>
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg shadow mt-6 text-left">
+          <h3 class="text-lg font-bold mb-2">🎯 Misi KenariCoin</h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li>Menyediakan token dengan utilitas nyata dan bisa dipakai sehari-hari.</li>
+            <li>Membangun komunitas yang solid dengan sistem reward transparan.</li>
+            <li>Memperluas ekosistem melalui kemitraan strategis.</li>
+            <li>Mengembangkan fitur staking & program loyalitas.</li>
+          </ul>
+        </div>
 
-  <!-- Footer Mini -->
-  <div class="mt-10 text-sm text-gray-600 space-y-2">
-    <p>📜 Contract:  
-      <a href="https://bscscan.com/token/0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-600 font-semibold hover:underline">
-        0x1390f63AF92448c46368443496a2bfc1469558de
-      </a>
-    </p>
-    <p>🌐 Website resmi:  
-      <a href="https://kenaricoin.netlify.app/" target="_blank" class="text-yellow-600 font-semibold hover:underline">
-        kenaricoin.com
-      </a>
-    </p>
-    <p>© 2025 KenariCoin. All Rights Reserved.</p>
-  </div>
-</section>
+        <!-- Tokenomics -->
+        <div class="bg-white shadow rounded-xl p-6 mt-8 text-left">
+          <h3 class="text-xl font-bold mb-4">📊 Tokenomics</h3>
+          <ul class="list-disc list-inside space-y-2 text-gray-700">
+            <li><span class="font-semibold">Total Supply:</span> 1,000,000,000 KN</li>
+            <li><span class="font-semibold">Liquidity Pool:</span> 50%</li>
+            <li><span class="font-semibold">Staking & Rewards:</span> 20%</li>
+            <li><span class="font-semibold">Community Airdrop:</span> 20%</li>
+            <li><span class="font-semibold">Development Team:</span> 10%</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">FAQ (Pertanyaan Umum)</h2>
+      <div class="max-w-2xl mx-auto text-left space-y-4 text-gray-700 leading-relaxed">
+        <div class="bg-white shadow rounded-xl p-4">
+          <h3 class="font-semibold">❓ Apa itu KenariCoin?</h3>
+          <p>KenariCoin (KN) adalah token BEP-20 berbasis Binance Smart Chain yang dirancang untuk menghadirkan ekosistem DeFi dengan fokus pada kecepatan, transparansi, dan utilitas nyata.</p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-4">
+          <h3 class="font-semibold">❓ Bagaimana cara membeli KenariCoin?</h3>
+          <p>Kamu bisa membeli KenariCoin melalui 
+            <a href="https://pancakeswap.finance/swap?outputCurrency=0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-600 font-semibold hover:underline">PancakeSwap</a> 
+            dengan menukar BNB ke KN.
+          </p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-4">
+          <h3 class="font-semibold">❓ Apakah ada fitur staking?</h3>
+          <p>Ya, fitur staking sedang disiapkan sesuai roadmap 2025.</p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-4">
+          <h3 class="font-semibold">❓ Di mana melihat kontrak token?</h3>
+          <p>Kontrak KenariCoin dapat dicek di 
+            <a href="https://bscscan.com/token/0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-600 font-semibold hover:underline">BscScan</a>.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-10 text-sm text-gray-600 space-y-2">
+        <p>📜 Contract:  
+          <a href="https://bscscan.com/token/0x1390f63AF92448c46368443496a2bfc1469558de" target="_blank" class="text-yellow-600 font-semibold hover:underline">
+            0x1390f63AF92448c46368443496a2bfc1469558de
+          </a>
+        </p>
+        <p>🌐 Website resmi:  
+          <a href="https://kenaricoin.netlify.app/" target="_blank" class="text-yellow-600 font-semibold hover:underline">
+            kenaricoin.com
+          </a>
+        </p>
+        <p>© 2025 KenariCoin. All Rights Reserved.</p>
+      </div>
+    </section>
+  </main>
+
   <!-- Wallet Modal -->
   <div id="walletModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-2xl p-6 w-80 shadow-lg">
@@ -361,213 +325,395 @@ function copyContract() {
       <button onclick="closeModal()" class="w-full mt-3 py-2 border rounded-lg hover:bg-gray-100">Cancel</button>
     </div>
   </div>
+
   <!-- Scripts -->
   <script>
+    // ===============================
+    // UI Basics
+    // ===============================
     const mobileMenu = document.getElementById("mobileMenu");
     const menuBtn = document.getElementById("menuBtn");
+    if (menuBtn) {
+      menuBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+    }
 
-    // Toggle menu
-    menuBtn.addEventListener("click", () => {
-      mobileMenu.classList.toggle("hidden");
-    });
-
-    // Page Switching
     function showPage(pageId) {
       document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden"));
       document.getElementById(pageId).classList.remove("hidden");
     }
-
-    // Navigate + close mobile menu
     function navigate(pageId) {
       showPage(pageId);
       mobileMenu.classList.add("hidden");
     }
+    function copyContract() {
+      const addr = document.getElementById("contractAddr").innerText;
+      navigator.clipboard.writeText(addr);
+      alert("✅ Contract Address disalin: " + addr);
+    }
+    // Default page
+    showPage("home");
 
     // Modal
-    function openModal() {
-      document.getElementById("walletModal").classList.remove("hidden");
-    }
-    function closeModal() {
-      document.getElementById("walletModal").classList.add("hidden");
-    }
+    function openModal() { document.getElementById("walletModal").classList.remove("hidden"); }
+    function closeModal() { document.getElementById("walletModal").classList.add("hidden"); }
 
+    // ===============================
+    // Chain & Contracts (BSC Mainnet)
+    // ===============================
+    const BSC_CHAIN_ID = "0x38";
+    const ROUTER_ADDRESS = "0x10ED43C718714eb63d5aA57B78B54704E256024E"; // Pancake v2
+    const WBNB = "0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+    const KN = "0x1390f63AF92448c46368443496a2bfc1469558de"; // KenariCoin
+    const USDT = "0x55d398326f99059fF775485246999027B3197955";
+    const USDC = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d";
+
+    const TOKEN_DECIMALS = {
+      BNB: 18,
+      KN: 6,
+      [KN]: 6,
+      [USDT]: 18,
+      [USDC]: 18,
+      [WBNB]: 18
+    };
+
+    const ERC20_ABI = [
+      "function balanceOf(address) view returns (uint256)",
+      "function decimals() view returns (uint8)",
+      "function allowance(address,address) view returns (uint256)",
+      "function approve(address spender, uint256 amount) returns (bool)"
+    ];
+
+    const ROUTER_ABI = [
+      // view
+      {"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"}],"name":"getAmountsOut","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"view","type":"function"},
+      // swaps
+      {"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactETHForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"payable","type":"function"},
+      // liquidity
+      {"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amountTokenDesired","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"addLiquidityETH","outputs":[{"internalType":"uint256","name":"amountToken","type":"uint256"},{"internalType":"uint256","name":"amountETH","type":"uint256"},{"internalType":"uint256","name":"liquidity","type":"uint256"}],"stateMutability":"payable","type":"function"}
+    ];
+
+    // ===============================
     // Wallet connection
+    // ===============================
     let provider, signer, userAddress;
 
-    async function connectMetaMask() {
-      if (window.ethereum) {
+    async function ensureBSC() {
+      if (!window.ethereum) return;
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
+      if (chainId !== BSC_CHAIN_ID) {
         try {
-          provider = new ethers.providers.Web3Provider(window.ethereum);
-          await provider.send("eth_requestAccounts", []);
-          signer = provider.getSigner();
-          userAddress = await signer.getAddress();
-
-          document.getElementById("connectBtn").innerText =
-            userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
-
-          updateBalances();
-          closeModal();
-        } catch (err) {
-          console.error("MetaMask error:", err);
-          alert("MetaMask connection failed: " + err.message);
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: BSC_CHAIN_ID }]
+          });
+        } catch (e) {
+          alert("Mohon switch ke BNB Smart Chain (Mainnet) di wallet Anda.");
+          throw e;
         }
-      } else {
-        alert("MetaMask belum terpasang!");
+      }
+    }
+
+    async function connectMetaMask() {
+      if (!window.ethereum) return alert("MetaMask belum terpasang!");
+      try {
+        await ensureBSC();
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        document.getElementById("connectBtn").innerText =
+          userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+        await updateBalances();
+        closeModal();
+        setupWalletEvents();
+      } catch (err) {
+        console.error("MetaMask error:", err);
+        alert("MetaMask connection failed: " + (err?.message || err));
       }
     }
 
     async function connectOKX() {
-      if (window.okxwallet && window.okxwallet.request) {
-        try {
-          provider = new ethers.providers.Web3Provider(window.okxwallet);
-          await provider.send("eth_requestAccounts", []);
-          signer = provider.getSigner();
-          userAddress = await signer.getAddress();
-
-          document.getElementById("connectBtn").innerText =
-            userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
-
-          updateBalances();
-          closeModal();
-        } catch (err) {
-          console.error("OKX error:", err);
-          alert("OKX connection failed: " + err.message);
-        }
-      } else {
-        alert("OKX Wallet belum terpasang!");
+      if (!(window.okxwallet && window.okxwallet.request)) return alert("OKX Wallet belum terpasang!");
+      try {
+        provider = new ethers.providers.Web3Provider(window.okxwallet);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        document.getElementById("connectBtn").innerText =
+          userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+        await updateBalances();
+        closeModal();
+        setupWalletEvents();
+      } catch (err) {
+        console.error("OKX error:", err);
+        alert("OKX connection failed: " + (err?.message || err));
       }
     }
 
     function selectWallet(wallet) {
-      if (wallet === "metamask") {
-        connectMetaMask();
-      } else if (wallet === "okx") {
-        connectOKX();
-      }
+      if (wallet === "metamask") connectMetaMask();
+      else if (wallet === "okx") connectOKX();
     }
 
+    function setupWalletEvents() {
+      if (!window.ethereum) return;
+      window.ethereum.on("accountsChanged", async () => {
+        const accounts = await provider.listAccounts();
+        if (accounts.length) {
+          userAddress = accounts[0];
+          document.getElementById("connectBtn").innerText =
+            userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+          updateBalances();
+        }
+      });
+      window.ethereum.on("chainChanged", () => window.location.reload());
+    }
+
+    // ===============================
     // Balances
+    // ===============================
     async function updateBalances() {
       if (!provider || !userAddress) return;
-
       try {
-        // BNB balance
+        // BNB
         const balance = await provider.getBalance(userAddress);
         const bnb = ethers.utils.formatEther(balance);
-        document.getElementById("bnbBalance").innerText = parseFloat(bnb).toFixed(4) + " BNB";
+        document.getElementById("bnbBalance").innerText = (+bnb).toFixed(4) + " BNB";
 
-        // KNC balance
-        const tokenAddress = "0x1390f63AF92448c46368443496a2bfc1469558de"; // GANTI alamat contract token KNC
-        const tokenABI = [
-          "function balanceOf(address owner) view returns (uint256)",
-          "function decimals() view returns (uint8)"
-        ];
-        const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
-        const decimals = await tokenContract.decimals();
-        const rawBalance = await tokenContract.balanceOf(userAddress);
-        const knc = ethers.utils.formatUnits(rawBalance, decimals);
-        document.getElementById("tokenBalance").innerText = parseFloat(knc).toFixed(2) + " KNC";
-
+        // KN
+        const token = new ethers.Contract(KN, ERC20_ABI, provider);
+        const raw = await token.balanceOf(userAddress);
+        const kn = ethers.utils.formatUnits(raw, 6);
+        document.getElementById("tokenBalance").innerText = (+kn).toFixed(2) + " KN";
       } catch (err) {
         console.error("Error fetching balances:", err);
       }
     }
 
-    // Default page
-    showPage("home");
+    // ===============================
+    // Tabs
+    // ===============================
+    const tabButtons = document.querySelectorAll(".tabBtn");
+    const tabContents = document.querySelectorAll(".tabContent");
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tabId = btn.getAttribute("data-tab");
+        tabButtons.forEach(b => b.classList.remove("border-yellow-500", "text-yellow-600"));
+        tabContents.forEach(c => c.classList.add("hidden"));
+        btn.classList.add("border-yellow-500", "text-yellow-600");
+        document.getElementById(`tab-${tabId}`).classList.remove("hidden");
+      });
+    });
+
+    // ===============================
+    // Router helper
+    // ===============================
+    function getPath(fromSymbol /* BNB/USDT/USDC */ , toToken /* KN fixed */) {
+      if (fromSymbol === "BNB") {
+        return [WBNB, KN];
+      } else if (fromSymbol === "USDT") {
+        return [USDT, KN];
+      } else if (fromSymbol === "USDC") {
+        return [USDC, KN];
+      }
+      return [WBNB, KN];
+    }
+
+    function toWei(amountStr, decimals) {
+      const clean = (amountStr || "0").toString().trim();
+      return ethers.utils.parseUnits(clean === "" ? "0" : clean, decimals);
+    }
+    function fromWei(bn, decimals) {
+      return ethers.utils.formatUnits(bn, decimals);
+    }
+
+    function getRouter(signerOrProvider) {
+      return new ethers.Contract(ROUTER_ADDRESS, ROUTER_ABI, signerOrProvider);
+    }
+
+    async function ensureAllowance(tokenAddr, owner, spender, amountWei) {
+      const token = new ethers.Contract(tokenAddr, ERC20_ABI, signer);
+      const current = await token.allowance(owner, spender);
+      if (current.gte(amountWei)) return;
+      const tx = await token.approve(spender, amountWei);
+      await tx.wait();
+    }
+
+    // ===============================
+    // Kalkulasi (Swap & Buy)
+    // ===============================
+    async function updateSwapOutput() {
+      const fromToken = document.getElementById("swapFromToken").value; // BNB/USDT/USDC
+      const amountIn = document.getElementById("swapFromAmount").value;
+
+      if (!amountIn || isNaN(amountIn)) {
+        document.getElementById("swapToAmount").value = "0.0";
+        return;
+      }
+      try {
+        const router = getRouter(new ethers.providers.Web3Provider(window.ethereum || window).getSigner());
+        const decIn = fromToken === "BNB" ? 18 : 18; // BSC USDT/USDC are 18
+        const amountInWei = toWei(amountIn, decIn);
+        const path = getPath(fromToken, KN);
+        const amounts = await router.getAmountsOut(amountInWei, path);
+        const out = fromWei(amounts[amounts.length - 1], 6);
+        document.getElementById("swapToAmount").value = (+out).toFixed(6);
+      } catch (err) {
+        console.error("Swap calc error:", err);
+        document.getElementById("swapToAmount").value = "Error";
+      }
+    }
+
+    async function updateBuyOutput() {
+      const fromToken = document.getElementById("buyFromToken").value;
+      const amountIn = document.getElementById("buyAmount").value;
+
+      if (!amountIn || isNaN(amountIn)) {
+        document.getElementById("buyReceive").value = "0.0";
+        return;
+      }
+      try {
+        const router = getRouter(new ethers.providers.Web3Provider(window.ethereum || window).getSigner());
+        const decIn = fromToken === "BNB" ? 18 : 18;
+        const amountInWei = toWei(amountIn, decIn);
+        const path = getPath(fromToken, KN);
+        const amounts = await router.getAmountsOut(amountInWei, path);
+        const out = fromWei(amounts[amounts.length - 1], 6);
+        document.getElementById("buyReceive").value = (+out).toFixed(6);
+      } catch (err) {
+        console.error("Buy calc error:", err);
+        document.getElementById("buyReceive").value = "Error";
+      }
+    }
+
+    // ===============================
+    // Eksekusi Swap / Buy
+    // ===============================
+    async function doSwap() {
+      if (!window.ethereum) return alert("Wallet belum terpasang.");
+      try {
+        await ensureBSC();
+        const web3prov = new ethers.providers.Web3Provider(window.ethereum);
+        await web3prov.send("eth_requestAccounts", []);
+        provider = web3prov;
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        const fromToken = document.getElementById("swapFromToken").value;
+        const amountIn = document.getElementById("swapFromAmount").value;
+        if (!amountIn || isNaN(amountIn) || +amountIn <= 0) return alert("Masukkan jumlah valid");
+
+        const router = getRouter(signer);
+        const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
+        const decIn = 18;
+        const amountInWei = toWei(amountIn, decIn);
+        const path = getPath(fromToken, KN);
+
+        // Dapatkan expected out untuk set slippage
+        const amounts = await router.getAmountsOut(amountInWei, path);
+        const outWei = amounts[amounts.length - 1];
+        const slippageBps = 100; // 1%
+        const amountOutMin = outWei.mul(10000 - slippageBps).div(10000);
+
+        let tx;
+        if (fromToken === "BNB") {
+          tx = await router.swapExactETHForTokens(
+            amountOutMin,
+            path,
+            userAddress,
+            deadline,
+            { value: amountInWei }
+          );
+        } else {
+          // Approve dari token (USDT/USDC)
+          const tokenAddr = fromToken === "USDT" ? USDT : USDC;
+          await ensureAllowance(tokenAddr, userAddress, ROUTER_ADDRESS, amountInWei);
+          tx = await router.swapExactTokensForTokens(
+            amountInWei,
+            amountOutMin,
+            path,
+            userAddress,
+            deadline
+          );
+        }
+        alert("Swap tx sent! Hash: " + tx.hash);
+      } catch (err) {
+        console.error("Swap error:", err);
+        alert("Gagal swap: " + (err?.reason || err?.message || err));
+      } finally {
+        updateBalances();
+      }
+    }
+
+    async function doBuy() {
+      // Buy = swap ke KN (UI terpisah)
+      await doSwap();
+    }
+
+    // ===============================
+    // Add Liquidity (BNB-KN only)
+    // ===============================
+    async function doAddLiquidity() {
+      if (!window.ethereum) return alert("Wallet belum terpasang.");
+      try {
+        await ensureBSC();
+        const web3prov = new ethers.providers.Web3Provider(window.ethereum);
+        await web3prov.send("eth_requestAccounts", []);
+        provider = web3prov;
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        const bnbAmount = document.getElementById("liqFromAmount").value;
+        const knAmount = document.getElementById("liqKNC").value;
+        if (!bnbAmount || !knAmount || isNaN(bnbAmount) || isNaN(knAmount) || +bnbAmount<=0 || +knAmount<=0) {
+          return alert("Masukkan jumlah BNB & KN yang valid");
+        }
+
+        const router = getRouter(signer);
+        const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
+
+        const bnbWei = toWei(bnbAmount, 18);
+        const knWei  = toWei(knAmount, 6);
+
+        // Approve KN ke router
+        await ensureAllowance(KN, userAddress, ROUTER_ADDRESS, knWei);
+
+        // Slippage min set ke 1% (bisa dibuat input nanti)
+        const amountKNMin = knWei.mul(9900).div(10000);
+        const amountBNBMin = bnbWei.mul(9900).div(10000);
+
+        const tx = await router.addLiquidityETH(
+          KN,
+          knWei,
+          amountKNMin,
+          amountBNBMin,
+          userAddress,
+          deadline,
+          { value: bnbWei }
+        );
+        alert("Add Liquidity tx sent! Hash: " + tx.hash);
+      } catch (err) {
+        console.error("Liquidity error:", err);
+        alert("Gagal add liquidity: " + (err?.reason || err?.message || err));
+      } finally {
+        updateBalances();
+      }
+    }
+
+    // Expose to window for HTML onclick
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.navigate = navigate;
+    window.selectWallet = selectWallet;
+    window.updateSwapOutput = updateSwapOutput;
+    window.updateBuyOutput = updateBuyOutput;
+    window.doSwap = doSwap;
+    window.doBuy = doBuy;
+    window.doAddLiquidity = doAddLiquidity;
+    window.copyContract = copyContract;
   </script>
-  <!-- Tambahkan ini sebelum script lain -->
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-<script src="config.js"></script>
-<script src="ui.js"></script>
-<script src="wallet.js"></script>
-<script>
-// ===============================
-// PancakeSwap Router Setup (Mainnet)
-// ===============================
-const ROUTER_ADDRESS = "0x10ED43C718714eb63d5aA57B78B54704E256024E"; 
-const ROUTER_ABI = [
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
-      { "internalType": "address[]", "name": "path", "type": "address[]" }
-    ],
-    "name": "getAmountsOut",
-    "outputs": [
-      { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
-
-let router;
-if (typeof window.ethereum !== "undefined") {
-  const providerRouter = new ethers.providers.Web3Provider(window.ethereum);
-  const signerRouter = providerRouter.getSigner();
-  router = new ethers.Contract(ROUTER_ADDRESS, ROUTER_ABI, signerRouter);
-}
-
-// ===============================
-// Token Address Map (Mainnet)
-// ===============================
-const TOKENS = {
-  BNB: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", 
-  USDT: "0x55d398326f99059fF775485246999027B3197955",
-  USDC: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-  KNC: "0x1390f63AF92448c46368443496a2bfc1469558de" // Ganti dengan tokenmu
-};
-
-// ===============================
-// Swap Kalkulasi
-// ===============================
-async function updateSwapOutput() {
-  const fromToken = document.getElementById("swapFromToken").value;
-  const toToken = document.getElementById("swapToToken").value;
-  const amountIn = document.getElementById("swapFromAmount").value;
-
-  if (!amountIn || isNaN(amountIn)) {
-    document.getElementById("swapToAmount").value = "0.0";
-    return;
-  }
-
-  try {
-    const amountInWei = ethers.utils.parseUnits(amountIn, 18);
-    const path = [TOKENS[fromToken], TOKENS[toToken]];
-    const amounts = await router.getAmountsOut(amountInWei, path);
-
-    const out = ethers.utils.formatUnits(amounts[1], 18);
-    document.getElementById("swapToAmount").value = parseFloat(out).toFixed(6);
-  } catch (err) {
-    console.error("Swap Error:", err);
-    document.getElementById("swapToAmount").value = "Error";
-  }
-}
-
-// ===============================
-// Buy Kalkulasi
-// ===============================
-async function updateBuyOutput() {
-  const fromToken = document.getElementById("buyFromToken").value;
-  const amountIn = document.getElementById("buyAmount").value;
-
-  if (!amountIn || isNaN(amountIn)) {
-    document.getElementById("buyReceive").value = "0.0";
-    return;
-  }
-
-  try {
-    const amountInWei = ethers.utils.parseUnits(amountIn, 18);
-    const path = [TOKENS[fromToken], TOKENS.KNC];
-    const amounts = await router.getAmountsOut(amountInWei, path);
-
-    const out = ethers.utils.formatUnits(amounts[1], 18);
-    document.getElementById("buyReceive").value = parseFloat(out).toFixed(6);
-  } catch (err) {
-    console.error("Buy Error:", err);
-    document.getElementById("buyReceive").value = "Error";
-  }
-}
-</script>
 </body>
 </html>
